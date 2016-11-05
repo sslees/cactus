@@ -9,7 +9,7 @@
  *       by Silver Moon (m00n.silv3r@gmail.com)
  */
 
-#include <arpa/inet.h>
+#include <netdb.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -31,8 +31,8 @@ int main() {
    server_addr.sin_port = htons(PORT);
    bind(socket_fd, (struct sockaddr *) &server_addr, sizeof server_addr);
    while (1) {
-      recvfrom(socket_fd, request, BUFF_LEN, 0, (struct sockaddr *) &client_addr,
-       (socklen_t *) &client_len);
+      recvfrom(socket_fd, request, BUFF_LEN, 0, (struct sockaddr *)
+       &client_addr, (socklen_t *) &client_len);
       if (parse_type((u_char *) request) != T_CON) break;
       if (parse_code((u_char *) request) == MC_POST) {
          if (!strcmp(parse_path((u_char *) request), "/data")) {
@@ -50,8 +50,8 @@ int main() {
        (struct sockaddr*) &client_addr, client_len);
       free(response.data);
       bzero(request, BUFF_LEN);
-      recvfrom(socket_fd, request, BUFF_LEN, 0, (struct sockaddr *) &client_addr,
-       (socklen_t *) &client_len);
+      recvfrom(socket_fd, request, BUFF_LEN, 0, (struct sockaddr *)
+       &client_addr, (socklen_t *) &client_len);
       if (parse_type((u_char *) request) != T_ACK) break;
    }
    close(socket_fd);

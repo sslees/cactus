@@ -44,7 +44,7 @@ char *response_decrip(u_char code) {
 buffer_t build_packet(u_char code, char *path, buffer_t data) {
    static u_short messageID = 0;
 
-   u_char *packet = calloc(1, PACKET_BASE + strlen(HOST) + strlen(path) +
+   u_char *packet = calloc(1, PACKET_BASE + strlen(HOSTNAME) + strlen(path) +
     data.len + 2);
    int pos = 0;
 
@@ -56,9 +56,9 @@ buffer_t build_packet(u_char code, char *path, buffer_t data) {
    /* Token */
    // no Token (TKL is 0)
    /* Uri-Host Option */
-   packet[pos++] = ON_URI_HOST << 4 | (strlen(HOST) + 1);
-   strcpy((char *) packet + pos, HOST);
-   pos += strlen(HOST) + 1;
+   packet[pos++] = ON_URI_HOST << 4 | (strlen(HOSTNAME) + 1);
+   strcpy((char *) packet + pos, HOSTNAME);
+   pos += strlen(HOSTNAME) + 1;
    /* Uri-Port Option */
    packet[pos++] = (ON_URI_PORT - ON_URI_HOST) << 4 | 2;
    packet[pos++] = PORT >> 8 & 0xFF;
@@ -104,9 +104,10 @@ u_short parse_message_id(u_char *packet) {
 }
 
 char *parse_path(u_char *packet) {
-   return (char *) packet + 10 + strlen(HOST);
+   return (char *) packet + 10 + strlen(HOSTNAME);
 }
 
 u_char *parse_payload(u_char *packet) {
-   return packet + PACKET_BASE + strlen(HOST) + strlen(parse_path(packet)) + 2;
+   return packet + PACKET_BASE + strlen(HOSTNAME) + strlen(parse_path(packet)) +
+    2;
 }

@@ -9,14 +9,10 @@
  *       by Silver Moon (m00n.silv3r@gmail.com)
  */
 
-#include <arpa/inet.h>
-#include <netdb.h> // new
+#include <netdb.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 #include <unistd.h>
-
-#include <stdio.h>
 
 #include "cactus.h"
 #include "coap.h"
@@ -28,18 +24,15 @@ double measure() {
 int main() {
    struct sockaddr_in server_addr;
    int socket_fd, server_len = sizeof server_addr;
-   char response[BUFF_LEN];
+   struct hostent *server = gethostbyname(HOSTNAME);
    buffer_t data, request, ack;
-
-   // new
-   struct hostent *server = gethostbyname(HOST);
+   char response[BUFF_LEN];
 
    socket_fd = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
    bzero((char *) &server_addr, sizeof server_addr);
    server_addr.sin_family = AF_INET;
    bcopy((char *) server->h_addr, (char *) &server_addr.sin_addr.s_addr,
     server->h_length);
-   // inet_aton(HOST , &server_addr.sin_addr);
    server_addr.sin_port = htons(PORT);
    while (1) {
       u_char payload[PAYLOAD_LEN];
@@ -51,7 +44,6 @@ int main() {
       request = build_packet(MC_POST, "/data", data);
       sendto(socket_fd, request.data, request.len, 0,
        (struct sockaddr *) &server_addr, server_len);
-      printf("sending...\n");
       free(request.data);
       bzero(response, BUFF_LEN);
       recvfrom(socket_fd, response, BUFF_LEN, 0, (struct sockaddr *)
