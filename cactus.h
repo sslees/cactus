@@ -13,7 +13,7 @@
 
 #include "util.h"
 
-#define HOST "sslees.com"
+#define HOST "localhost"
 #define PORT 5683
 #define BUFF_LEN 255
 #define PAYLOAD_LEN 16

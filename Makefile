@@ -5,7 +5,8 @@
 # Assignment: Final Project
 
 ALL = cactus_client cactus_server
-GCC = gcc -Wall -Werror
+GCC = gcc
+# -Wall -Werror
 
 all: $(ALL)
 
