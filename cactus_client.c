@@ -10,6 +10,7 @@
  */
 
 #include <arpa/inet.h>
+#include <netdb.h> // new
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -30,10 +31,15 @@ int main() {
    char response[BUFF_LEN];
    buffer_t data, request, ack;
 
+   // new
+   struct hostent *server = gethostbyname(HOST);
+
    socket_fd = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
    bzero((char *) &server_addr, sizeof server_addr);
    server_addr.sin_family = AF_INET;
-   inet_aton(HOST , &server_addr.sin_addr);
+   bcopy((char *) server->h_addr, (char *) &server_addr.sin_addr.s_addr,
+    server->h_length);
+   // inet_aton(HOST , &server_addr.sin_addr);
    server_addr.sin_port = htons(PORT);
    while (1) {
       u_char payload[PAYLOAD_LEN];

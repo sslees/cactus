@@ -33,15 +33,24 @@ int main() {
    while (1) {
       recvfrom(socket_fd, request, BUFF_LEN, 0, (struct sockaddr *) &client_addr,
        (socklen_t *) &client_len);
-      if (parse_type((u_char *) request) != T_CON) break;
+      if (parse_type((u_char *) request) != T_CON) {
+         printf("error...\n");
+         break;
+      }
       if (parse_code((u_char *) request) == MC_POST) {
          if (!strcmp(parse_path((u_char *) request), "/data")) {
             response = build_packet(RC_VALID, "/data", data);
             printf("timestamp: %ld, measurement: %lf\n",
              parse_timestamp(parse_payload((u_char *) request)),
              parse_measurement(parse_payload((u_char *) request)));
-         } else break;
-      } else break;
+         } else {
+            printf("error...\n");
+            break;
+         }
+      } else {
+         printf("error...\n");
+         break;
+      }
       ack = build_ack(parse_message_id((u_char *) request));
       sendto(socket_fd, ack.data, ack.len, 0,
        (struct sockaddr*) &client_addr, client_len);
@@ -52,7 +61,10 @@ int main() {
       bzero(request, BUFF_LEN);
       recvfrom(socket_fd, request, BUFF_LEN, 0, (struct sockaddr *) &client_addr,
        (socklen_t *) &client_len);
-      if (parse_type((u_char *) request) != T_ACK) break;
+      if (parse_type((u_char *) request) != T_ACK) {
+         printf("error...\n");
+         break;
+      }
    }
    close(socket_fd);
 
