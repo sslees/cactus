@@ -13,7 +13,7 @@
 
 #include "util.h"
 
-#define HOST "localhost"
+#define HOST "10.0.0.8"
 #define PORT 5683
 #define BUFF_LEN 255
 #define PAYLOAD_LEN 16

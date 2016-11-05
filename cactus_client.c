@@ -48,16 +48,16 @@ int main() {
       printf("sending...\n");
       free(request.data);
       bzero(response, BUFF_LEN);
-      // recvfrom(socket_fd, response, BUFF_LEN, 0, (struct sockaddr *)
-      //  &server_addr, (socklen_t *) &server_len);
-      // if (parse_type((u_char *) response) != T_ACK) break;
-      // recvfrom(socket_fd, response, BUFF_LEN, 0, (struct sockaddr *)
-      //  &server_addr, (socklen_t *) &server_len);
-      // ack = build_ack(parse_message_id((u_char *) response));
-      // sendto(socket_fd, ack.data, ack.len, 0,
-      //  (struct sockaddr *) &server_addr, server_len);
-      // free(ack.data);
-      // if (parse_code((u_char *) response) != RC_VALID) break;
+      recvfrom(socket_fd, response, BUFF_LEN, 0, (struct sockaddr *)
+       &server_addr, (socklen_t *) &server_len);
+      if (parse_type((u_char *) response) != T_ACK) break;
+      recvfrom(socket_fd, response, BUFF_LEN, 0, (struct sockaddr *)
+       &server_addr, (socklen_t *) &server_len);
+      ack = build_ack(parse_message_id((u_char *) response));
+      sendto(socket_fd, ack.data, ack.len, 0,
+       (struct sockaddr *) &server_addr, server_len);
+      free(ack.data);
+      if (parse_code((u_char *) response) != RC_VALID) break;
       sleep(5);
    }
    close(socket_fd);
