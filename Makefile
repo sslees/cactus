@@ -15,10 +15,18 @@ cactus_client: cactus_client.c coap.c cactus.c
 cactus_server: cactus_server.c coap.c cactus.c
 	$(GCC) -o $@ $^
 
+#####
+cactus_sql_test: cactus_sql.c
+	$(GCC) -Wno-deprecated-declarations -o $@ $^ sqlite3.c
+#####
+
 coap.c: coap.h cactus.h
 	touch $@
 
 cactus.c: cactus.h
+	touch $@
+
+cactus_sql.c: cactus_sql.h
 	touch $@
 
 coap.h: util.h

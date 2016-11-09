@@ -4,7 +4,7 @@
  * Date: 11/02/16
  * Class: CPE 458-01
  * Assignment: Final Project
- * Resources:
+ * References:
  *    http://www.binarytides.com/programming-udp-sockets-c-linux
  *       by Silver Moon (m00n.silv3r@gmail.com)
  */
@@ -13,6 +13,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+
+#include <stdio.h>
 
 #include "cactus.h"
 #include "coap.h"
@@ -48,14 +50,20 @@ int main() {
       bzero(response, BUFF_LEN);
       recvfrom(socket_fd, response, BUFF_LEN, 0, (struct sockaddr *)
        &server_addr, (socklen_t *) &server_len);
-      if (parse_type((u_char *) response) != T_ACK) break;
+      if (parse_type((u_char *) response) != T_ACK) {
+         printf("exiting client loop [1]...\n");
+         break;
+      }
       recvfrom(socket_fd, response, BUFF_LEN, 0, (struct sockaddr *)
        &server_addr, (socklen_t *) &server_len);
       ack = build_ack(parse_message_id((u_char *) response));
       sendto(socket_fd, ack.data, ack.len, 0,
        (struct sockaddr *) &server_addr, server_len);
       free(ack.data);
-      if (parse_code((u_char *) response) != RC_VALID) break;
+      if (parse_code((u_char *) response) != RC_VALID) {
+         printf("exiting client loop [2]...\n");
+         break;
+      }
       sleep(5);
    }
    close(socket_fd);
