@@ -26,15 +26,12 @@ int main() {
    struct sockaddr_in server_addr;
    int socket_fd, server_len = sizeof server_addr;
    struct hostent *server = gethostbyname(HOSTNAME);
-   char ok = 1, packets = 2, ackCt = 0, response[BUFF_LEN], code;
-   time_t timestamp = time(NULL);
-   double measurement = measure();
-   u_char payload[PAYLOAD_LEN];
-   buffer_t data, request, ack;
-   u_short messageID;
+   char ok = 1;
 
    // create UDP socket
    socket_fd = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
+   setsockopt(socket_fd, SOL_SOCKET, SO_RCVTIMEO, &((struct timeval)
+    {.tv_sec = 1, .tv_usec = 500000}), sizeof (struct timeval));
    memset((char *) &server_addr, 0, sizeof server_addr);
    server_addr.sin_family = AF_INET;
    memcpy((char *) &server_addr.sin_addr.s_addr, (char *) server->h_addr,
@@ -43,9 +40,13 @@ int main() {
 
    // periodically POST data
    while (ok) {
+      time_t timestamp = time(NULL);
+      double measurement = measure();
+      u_char payload[PAYLOAD_LEN];
+      buffer_t data, request;
+      char packets = 2, ackCt = 0;
+
       // build packet
-      timestamp = time(NULL);
-      measurement = measure();
       build_payload(payload, timestamp, measurement);
       data = (buffer_t) {.data = payload, .len = PAYLOAD_LEN};
       request = build_packet(MC_POST, "/data", data);
@@ -59,10 +60,16 @@ int main() {
 
       // recieve and process ACK and response (1 loop each)
       while (packets-- && ok) {
+         char response[BUFF_LEN];
+
          // recieve packet
          memset(response, 0, BUFF_LEN);
-         recvfrom(socket_fd, response, BUFF_LEN, 0, (struct sockaddr *)
-          &server_addr, (socklen_t *) &server_len);
+         if (recvfrom(socket_fd, response, BUFF_LEN, 0, (struct sockaddr *)
+          &server_addr, (socklen_t *) &server_len) == -1) {
+            printf("Request timed out. Terminating.\n");
+            ok = 0;
+            break;
+         }
 
          // process packet
          switch (parse_type((u_char *) response)) {
@@ -82,14 +89,16 @@ int main() {
                printf("Expected ACK. Terminating.\n");
                ok = 0;
             } else {
-               code = parse_code((u_char *) response);
+               int code = parse_code((u_char *) response);
+
                if (code == RC_VALID) {
+                  buffer_t ack = build_ack(parse_message_id((u_char *)
+                   response));
+
                   printf("Recieved response (0x%X, %s).\n", code,
                    response_decrip(code));
-                  messageID = parse_message_id((u_char *) response);
 
                   // send ACK
-                  ack = build_ack(messageID);
                   sendto(socket_fd, ack.data, ack.len, 0, (struct sockaddr *)
                    &server_addr, server_len);
                   free(ack.data);
@@ -106,7 +115,7 @@ int main() {
          }
       }
 
-      if (ok) sleep(5);
+      if (ok) sleep(3);
    }
 
    close(socket_fd);
