@@ -51,8 +51,9 @@ buffer_t build_packet(u_char code, char *path, buffer_t data) {
    packet[pos++] = VER << 6 | T_CON << 4 | TKL;
    packet[pos++] = code;
    /* Message ID */
-   packet[pos++] = messageID >> 8 & 0xFF;
-   packet[pos++] = messageID++ & 0xFF;
+   memcpy(packet + pos, &messageID, 2);
+   messageID++;
+   pos += 2;
    /* Token */
    // no Token (TKL is 0)
    /* Uri-Host Option */

@@ -13,7 +13,6 @@
 
 #include "util.h"
 
-// #define HOSTNAME "localhost"
 #define HOSTNAME "cactus.sslees.com"
 #define PORT 5683
 #define BUFF_LEN 255
