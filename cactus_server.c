@@ -23,16 +23,20 @@
 int main() {
    struct sockaddr_in server_addr, client_addr;
    int socket_fd, client_len = sizeof client_addr;
-   char request[BUFF_LEN];
-   buffer_t ack, data = {.data = (u_char *) "", .len = 0}, response;
 
+   // create UDP socket
    socket_fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-   bzero((char *) &server_addr, sizeof server_addr);
+   memset((char *) &server_addr, 0, sizeof server_addr);
    server_addr.sin_family = AF_INET;
    server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
    server_addr.sin_port = htons(PORT);
    bind(socket_fd, (struct sockaddr *) &server_addr, sizeof server_addr);
+
+   // continuously recieve data
    while (1) {
+      char request[BUFF_LEN];
+      buffer_t ack, data = {.data = (u_char *) "", .len = 0}, response;
+
       recvfrom(socket_fd, request, BUFF_LEN, 0, (struct sockaddr *)
        &client_addr, (socklen_t *) &client_len);
       if (parse_type((u_char *) request) != T_CON) {
@@ -60,7 +64,7 @@ int main() {
       sendto(socket_fd, response.data, response.len, 0,
        (struct sockaddr*) &client_addr, client_len);
       free(response.data);
-      bzero(request, BUFF_LEN);
+      memset(request, 0, BUFF_LEN);
       recvfrom(socket_fd, request, BUFF_LEN, 0, (struct sockaddr *)
        &client_addr, (socklen_t *) &client_len);
       if (parse_type((u_char *) request) != T_ACK) {
