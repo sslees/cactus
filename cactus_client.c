@@ -90,22 +90,20 @@ int main() {
                printf("Expected ACK. Terminating.\n");
             } else {
                int code = parse_code((u_char *) response);
+               buffer_t ack = build_ack(parse_message_id((u_char *) response));
 
-               if (code == RC_VALID) {
-                  buffer_t ack = build_ack(parse_message_id((u_char *)
-                   response));
+               printf("Recieved response (0x%X: %s).\n", code,
+                response_decrip(code));
 
-                  printf("Recieved response (0x%X, %s).\n", code,
-                   response_decrip(code));
+               // send ACK
+               sendto(socket_fd, ack.data, ack.len, 0, (struct sockaddr *)
+                &server_addr, server_len);
+               free(ack.data);
+               printf("Sent ACK.\n");
 
-                  // send ACK
-                  sendto(socket_fd, ack.data, ack.len, 0, (struct sockaddr *)
-                   &server_addr, server_len);
-                  free(ack.data);
-                  printf("Sent ACK.\n");
-               } else {
+               if (code != RC_VALID) {
                   ok = 0;
-                  printf("Recieved unexpected response code. Terminating.\n");
+                  printf("Unexpected response code. Terminating.\n");
                }
             }
          break;
