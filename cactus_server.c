@@ -11,11 +11,10 @@
 
 #include <netdb.h>
 #include <stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
-#include <stdio.h>
 
 #include "cactus.h"
 #include "coap.h"
@@ -23,6 +22,7 @@
 int main() {
    struct sockaddr_in server_addr, client_addr;
    int socket_fd, client_len = sizeof client_addr;
+   char ok = 1, packets = 1, ackCt = 1;
 
    // create UDP socket
    socket_fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
@@ -32,47 +32,88 @@ int main() {
    server_addr.sin_port = htons(PORT);
    bind(socket_fd, (struct sockaddr *) &server_addr, sizeof server_addr);
 
-   // continuously recieve data
-   while (1) {
-      char request[BUFF_LEN];
-      buffer_t ack, data = {.data = (u_char *) "", .len = 0}, response;
+   // continuously recieve and process data
+   while (ok) {
+      buffer_t empty = {.data = (u_char *) "", .len = 0}, response;
 
-      recvfrom(socket_fd, request, BUFF_LEN, 0, (struct sockaddr *)
-       &client_addr, (socklen_t *) &client_len);
-      if (parse_type((u_char *) request) != T_CON) {
-         printf("exiting server loop [1]...\n");
-         break;
-      }
-      if (parse_code((u_char *) request) == MC_POST) {
-         if (!strcmp(parse_path((u_char *) request), "/data")) {
-            response = build_packet(RC_VALID, "/data", data);
-            printf("timestamp: %ld, measurement: %lf\n",
-             parse_timestamp(parse_payload((u_char *) request)),
-             parse_measurement(parse_payload((u_char *) request)));
-         } else {
-            printf("exiting server loop [2]...\n");
+      // recieve and process ACK and data (1 loop each)
+      while (packets-- && ok) {
+         char request[BUFF_LEN];
+
+         // recieve packet
+         memset(request, 0, BUFF_LEN);
+         if (recvfrom(socket_fd, request, BUFF_LEN, 0, (struct sockaddr *)
+          &client_addr, (socklen_t *) &client_len) == -1) {
+            ok = 0;
+            printf("Request timed out. Terminating.\n");
             break;
          }
-      } else {
-         printf("exiting server loop [3]...\n");
+
+         // process packet
+         switch (parse_type((u_char *) request)) {
+         case T_ACK:
+            // process ACK
+            if (!packets && ackCt) {
+               ok = 0;
+               printf("Recieved unexpected ACK. Terminating.\n");
+            } else {
+               printf("Recieved ACK.\n");
+               ackCt++;
+            }
          break;
+         case T_CON:
+            // process request
+            if (!packets && !ackCt) {
+               ok = 0;
+               printf("Expected ACK. Terminating.\n");
+            } else {
+               int code = parse_code((u_char *) request);
+
+               if (code == MC_POST) {
+                  buffer_t ack = build_ack(parse_message_id((u_char *)
+                   request));
+
+                  if (!strcmp(parse_path((u_char *) request), "/data")) {
+                     response = build_packet(RC_VALID, "/data", empty);
+                     printf("timestamp: %ld, measurement: %lf\n",
+                      parse_timestamp(parse_payload((u_char *) request)),
+                      parse_measurement(parse_payload((u_char *) request)));
+                  } else {
+                     response = build_packet(RC_NOT_FOUND, "", empty);
+                     printf("Recieved unexpected URI-path.\n");
+                  }
+
+                  // send ACK
+                  sendto(socket_fd, ack.data, ack.len, 0, (struct sockaddr*)
+                   &client_addr, client_len);
+                  free(ack.data);
+                  printf("Sent ACK.\n");
+               } else {
+                  response = build_packet(RC_METHOD_NOT_ALLOWED, "", empty);
+                  printf("Recieved unexpected method code.\n");
+               }
+            }
+         break;
+         default:
+            ok = 0;
+            printf("Recieved unexpected packet type. Terminating.\n");
+         }
       }
-      ack = build_ack(parse_message_id((u_char *) request));
-      sendto(socket_fd, ack.data, ack.len, 0,
-       (struct sockaddr*) &client_addr, client_len);
-      free(ack.data);
-      sendto(socket_fd, response.data, response.len, 0,
-       (struct sockaddr*) &client_addr, client_len);
-      free(response.data);
-      memset(request, 0, BUFF_LEN);
-      recvfrom(socket_fd, request, BUFF_LEN, 0, (struct sockaddr *)
-       &client_addr, (socklen_t *) &client_len);
-      if (parse_type((u_char *) request) != T_ACK) {
-         printf("exiting server loop [4]...\n");
-         break;
+
+      if (ok) {
+         // send response
+         sendto(socket_fd, response.data, response.len, 0, (struct sockaddr*)
+          &client_addr, client_len);
+         free(response.data);
+         printf("Sent response.\n");
+
+         // set up next cycle
+         packets = 2;
+         ackCt = 0;
       }
    }
+
    close(socket_fd);
 
-   return 0;
+   return 1;
 }

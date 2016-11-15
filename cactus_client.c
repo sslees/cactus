@@ -66,8 +66,8 @@ int main() {
          memset(response, 0, BUFF_LEN);
          if (recvfrom(socket_fd, response, BUFF_LEN, 0, (struct sockaddr *)
           &server_addr, (socklen_t *) &server_len) == -1) {
-            printf("Request timed out. Terminating.\n");
             ok = 0;
+            printf("Request timed out. Terminating.\n");
             break;
          }
 
@@ -76,18 +76,18 @@ int main() {
          case T_ACK:
             // process ACK
             if (!packets && ackCt) {
-               printf("Recieved unexpected ACK. Terminating.\n");
                ok = 0;
+               printf("Recieved unexpected ACK. Terminating.\n");
             } else {
-               printf("Recieved ACK.\n");
                ackCt++;
+               printf("Recieved ACK.\n");
             }
          break;
          case T_CON:
             // process response
             if (!packets && !ackCt) {
-               printf("Expected ACK. Terminating.\n");
                ok = 0;
+               printf("Expected ACK. Terminating.\n");
             } else {
                int code = parse_code((u_char *) response);
 
@@ -104,14 +104,14 @@ int main() {
                   free(ack.data);
                   printf("Sent ACK.\n");
                } else {
-                  printf("Recieved unexpected response code. Terminating.\n");
                   ok = 0;
+                  printf("Recieved unexpected response code. Terminating.\n");
                }
             }
          break;
          default:
-            printf("Recieved unexpected packet type. Terminating.\n");
             ok = 0;
+            printf("Recieved unexpected packet type. Terminating.\n");
          }
       }
 
