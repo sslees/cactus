@@ -6,4 +6,5 @@
 
 cactus_client
 cactus_server
+cactus_sql_test
 *.dSYM

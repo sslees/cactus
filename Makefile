@@ -36,4 +36,4 @@ cactus.h: util.h
 	touch $@
 
 clean:
-	rm -rf $(ALL) *.dSYM
+	rm -rf $(ALL) cactus_sql_test *.dSYM
