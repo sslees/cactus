@@ -44,8 +44,8 @@ void sql_store_data(time_t timestamp, double measurement) {
    sqlite3_prepare_v2(db, "INSERT INTO raw_data VALUES(?1, ?2);", -1, &stmt,
     NULL);
 
-   sqlite3_bind_int64(stmt, 1, timestamp);
-   sqlite3_bind_int(stmt, 2, measurement);
+   sqlite3_bind_int(stmt, 1, timestamp);
+   sqlite3_bind_double(stmt, 2, measurement);
 
    if (sqlite3_step(stmt) != SQLITE_DONE) {
       fprintf(stderr, "SQL error: %s\nTerminating.\n", sqlite3_errmsg(db));
