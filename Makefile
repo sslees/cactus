@@ -12,13 +12,8 @@ all: $(ALL)
 cactus_client: cactus_client.c coap.c cactus.c
 	$(GCC) -o $@ $^
 
-cactus_server: cactus_server.c coap.c cactus.c
-	$(GCC) -o $@ $^
-
-#####
-cactus_sql_test: cactus_sql.c
-	$(GCC) -Wno-deprecated-declarations -o $@ $^ sqlite3.c
-#####
+cactus_server: cactus_server.c coap.c cactus.c cactus_sql.c sqlite3.c
+	$(GCC) -Wno-deprecated-declarations -o $@ $^
 
 coap.c: coap.h cactus.h
 	touch $@

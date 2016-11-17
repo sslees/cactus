@@ -9,41 +9,63 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
+#include "cactus_sql.h"
 #include "sqlite3.h"
 
-static int callback(void *NotUsed, int argc, char **argv, char **azColName) {
-   for (int i = 0; i < argc; i++)
-      printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
-   printf("\n");
+static sqlite3 *db;
 
-   return 0;
-}
-
-int main(int argc, char **argv) {
-   sqlite3 *db;
-   char *zErrMsg = 0;
-   int rc;
-
-   if (argc != 3) {
-      fprintf(stderr, "Usage: %s DATABASE SQL-STATEMENT\n", argv[0]);
-
-      return 1;
-   }
-   if ((rc = sqlite3_open(argv[1], &db))) {
-      fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
+void sql_open(char *dbName) {
+   if (sqlite3_open(dbName, &db)) {
+      fprintf(stderr, "Can't open database: %s\nTerminating.\n",
+       sqlite3_errmsg(db));
       sqlite3_close(db);
 
-      return 1;
+      exit(1);
    }
-   if ((rc = sqlite3_exec(db, argv[2], callback, 0, &zErrMsg)) != SQLITE_OK) {
-      fprintf(stderr, "SQL error: %s\n", zErrMsg);
-      sqlite3_free(zErrMsg);
+}
+
+void sql_cmd(char *cmd, int (*callback)(void *, int, char **, char **)) {
+   char *errMsg;
+
+   if (sqlite3_exec(db, cmd, callback, 0, &errMsg) != SQLITE_OK) {
+      fprintf(stderr, "SQL error: %s\nTerminating.\n", errMsg);
+      sqlite3_free(errMsg);
+
+      exit(1);
    }
-   sqlite3_close(db);
+}
+
+void sql_store_data(time_t timestamp, double measurement) {
+   sqlite3_stmt *stmt;
+
+   sqlite3_prepare_v2(db, "INSERT INTO raw_data VALUES(?1, ?2);", -1, &stmt,
+    NULL);
+
+   sqlite3_bind_int64(stmt, 1, timestamp);
+   sqlite3_bind_int(stmt, 2, measurement);
+
+   if (sqlite3_step(stmt) != SQLITE_DONE) {
+      fprintf(stderr, "SQL error: %s\nTerminating.\n", sqlite3_errmsg(db));
+
+      exit(1);
+   }
+
+   sqlite3_finalize(stmt);
+}
+
+int sql_print(void *notUsed, int argc, char **argv, char **colName) {
+   int i;
+
+   for (i = 0; i < argc - 1; i++)
+      printf("%s: %s, ", colName[i], argv[i] ? argv[i] : "NULL");
+   printf("%s: %s\n", colName[i], argv[i] ? argv[i] : "NULL");
 
    return 0;
 }
 
-// CREATE TABLE raw_data(timestamp INTEGER PRIMARY KEY ASC, measurement REAL NOT NULL);
-// INSERT INTO raw_data VALUES(0, 0.0);
+void sql_close() {
+   sqlite3_close(db);
+}

@@ -17,6 +17,7 @@
 #include <unistd.h>
 
 #include "cactus.h"
+#include "cactus_sql.h"
 #include "coap.h"
 
 int main() {
@@ -24,8 +25,15 @@ int main() {
    int socket_fd, client_len = sizeof client_addr;
    char ok = 1, packets = 1, ackCt = 1;
 
+   // prepare database
+   sql_open(DATABASE);
+   sql_cmd("CREATE TABLE IF NOT EXISTS raw_data(timestamp INTEGER PRIMARY KEY "
+    "ASC, measurement REAL NOT NULL);", NULL);
+
    // create UDP socket
    socket_fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+   setsockopt(socket_fd, SOL_SOCKET, SO_RCVTIMEO, &((struct timeval)
+    {.tv_sec = 9, .tv_usec = 0}), sizeof (struct timeval));
    memset((char *) &server_addr, 0, sizeof server_addr);
    server_addr.sin_family = AF_INET;
    server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -74,10 +82,16 @@ int main() {
                    request));
 
                   if (!strcmp(parse_path((u_char *) request), "/data")) {
+                     time_t timestamp =
+                      parse_timestamp(parse_payload((u_char *) request));
+                     double measurement =
+                      parse_measurement(parse_payload((u_char *) request));
+
+                     sql_store_data(timestamp, measurement);
+                     printf("timestamp: %ld, measurement: %lf\n", timestamp,
+                      measurement);
+
                      response = build_packet(RC_VALID, "/data", empty);
-                     printf("timestamp: %ld, measurement: %lf\n",
-                      parse_timestamp(parse_payload((u_char *) request)),
-                      parse_measurement(parse_payload((u_char *) request)));
                   } else {
                      response = build_packet(RC_NOT_FOUND, "", empty);
                      printf("Recieved unexpected URI-path.\n");
@@ -114,6 +128,10 @@ int main() {
    }
 
    close(socket_fd);
+
+   sql_cmd("SELECT * FROM raw_data;", sql_print);
+
+   sql_close();
 
    return 1;
 }
