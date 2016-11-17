@@ -13,7 +13,8 @@ cactus_client: cactus_client.c coap.c cactus.c
 	$(GCC) -o $@ $^
 
 cactus_server: cactus_server.c coap.c cactus.c cactus_sql.c sqlite3.c
-	$(GCC) -Wno-deprecated-declarations -o $@ $^
+	$(GCC) -Wno-deprecated-declarations -DSQLITE_THREADSAFE=0 \
+	 -DSQLITE_OMIT_LOAD_EXTENSION -o $@ $^
 
 coap.c: coap.h cactus.h
 	touch $@
