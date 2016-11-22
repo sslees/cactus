@@ -1,6 +1,6 @@
 /*
  * File: cactus_client.c
- * Author: Samuel Lees (sslees)
+ * Authora: Samuel Lees (sslees) and Matthew Lindly (mlindly)
  * Date: 11/02/16
  * Class: CPE 458-01
  * Assignment: Final Project
@@ -13,13 +13,33 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/wait.h>
 #include <unistd.h>
 
 #include "cactus.h"
 #include "coap.h"
 
+#define ADC_LEN 5
+#define ADC_MAX 1023
+
 double measure() {
-   return 3.14159L;
+   int pipeFDs[2];
+   char buffer[ADC_LEN];
+
+   pipe(pipeFDs);
+   if (!fork()) { // if child
+      close(pipeFDs[0]); // close child pipe read
+      dup2(pipeFDs[1], 1); // forward child stdout to child pipe write
+      close(pipeFDs[1]); // close child pipe write
+      execlp(PYTHON_EXE, PYTHON_EXE, MEASURE_SCRIPT, NULL); // run script
+   }
+   close(pipeFDs[1]); // close parent pipe write
+   wait(NULL); // wait for child to terminate
+   read(pipeFDs[0], buffer, ADC_LEN); // read measurement from parent pipe read
+   close(pipeFDs[0]); // close parent pipe read
+   buffer[ADC_LEN - 1] = '\0'; // replace newline with NULL terminator
+
+   return (double) strtol(buffer, NULL, 10) / ADC_MAX; // return percentage
 }
 
 int main() {

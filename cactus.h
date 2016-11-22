@@ -15,8 +15,9 @@
 
 #define HOSTNAME "cactus.sslees.com"
 #define PORT 5683
-#define BUFF_LEN 255
+#define MEASURE_SCRIPT "measure_test.py"
 #define PAYLOAD_LEN 16
+#define BUFF_LEN 255
 
 void build_payload(u_char *payload, time_t timestamp, double measurement);
 time_t parse_timestamp(u_char *packet);
