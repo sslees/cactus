@@ -10,6 +10,7 @@
  */
 
 #include <netdb.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdio.h>
 #include <stdlib.h>
