@@ -20,6 +20,16 @@
 #include "cactus_sql.h"
 #include "coap.h"
 
+void interrupt(int signal) {
+   sql_cmd("SELECT * FROM raw_data;", sql_print);
+}
+
+void quit(int signal) {
+   interrupt(signal);
+
+   exit(0);
+}
+
 int main() {
    struct sockaddr_in server_addr, client_addr;
    int socket_fd, client_len = sizeof client_addr;
@@ -30,10 +40,12 @@ int main() {
    sql_cmd("CREATE TABLE IF NOT EXISTS raw_data(timestamp INTEGER PRIMARY KEY "
     "ASC, measurement REAL NOT NULL);", NULL);
 
+   // set up signal handlers
+   signal(SIGINT, interrupt);
+   signal(SIGQUIT, quit);
+
    // create UDP socket
    socket_fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-   setsockopt(socket_fd, SOL_SOCKET, SO_RCVTIMEO, &((struct timeval)
-    {.tv_sec = 9, .tv_usec = 0}), sizeof (struct timeval));
    memset((char *) &server_addr, 0, sizeof server_addr);
    server_addr.sin_family = AF_INET;
    server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -50,12 +62,8 @@ int main() {
 
          // recieve packet
          memset(request, 0, BUFF_LEN);
-         if (recvfrom(socket_fd, request, BUFF_LEN, 0, (struct sockaddr *)
-          &client_addr, (socklen_t *) &client_len) == -1) {
-            ok = 0;
-            printf("Request timed out. Terminating.\n");
-            break;
-         }
+         recvfrom(socket_fd, request, BUFF_LEN, 0, (struct sockaddr *)
+          &client_addr, (socklen_t *) &client_len);
 
          // process packet
          switch (parse_type((u_char *) request)) {
@@ -127,10 +135,8 @@ int main() {
       }
    }
 
+   // something went wrong
    close(socket_fd);
-
-   sql_cmd("SELECT * FROM raw_data;", sql_print);
-
    sql_close();
 
    return 1;
