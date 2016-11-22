@@ -12,6 +12,7 @@
 #define DATABASE "test.db"
 
 void sql_open(char *dbName);
+void sql_prep_table(char *dbName);
 void sql_cmd(char *cmd, int (*callback)(void *, int, char **, char **));
 void sql_store_data(time_t timestamp, double measurement);
 int sql_print(void *notUsed, int argc, char **argv, char **colName);

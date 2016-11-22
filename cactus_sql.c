@@ -27,6 +27,11 @@ void sql_open(char *dbName) {
    }
 }
 
+void sql_prep_table(char *dbName) {
+   sql_cmd("CREATE TABLE IF NOT EXISTS measurements(timestamp INTEGER PRIMARY "
+    "KEY ASC, measurement REAL NOT NULL);", NULL);
+}
+
 void sql_cmd(char *cmd, int (*callback)(void *, int, char **, char **)) {
    char *errMsg;
 
@@ -41,8 +46,8 @@ void sql_cmd(char *cmd, int (*callback)(void *, int, char **, char **)) {
 void sql_store_data(time_t timestamp, double measurement) {
    sqlite3_stmt *stmt;
 
-   sqlite3_prepare_v2(db, "INSERT INTO raw_data VALUES(?1, ?2);", -1, &stmt,
-    NULL);
+   sqlite3_prepare_v2(db, "INSERT INTO measurements VALUES(?1, ?2);", -1,
+    &stmt, NULL);
 
    sqlite3_bind_int(stmt, 1, timestamp);
    sqlite3_bind_double(stmt, 2, measurement);

@@ -39,7 +39,7 @@ double measure() {
    close(pipeFDs[0]); // close parent pipe read
    buffer[ADC_LEN - 1] = '\0'; // replace newline with NULL terminator
 
-   return (double) strtol(buffer, NULL, 10) / ADC_MAX; // return percentage
+   return (double) strtol(buffer, NULL, 10) / ADC_MAX * 100; // percentage
 }
 
 int main() {

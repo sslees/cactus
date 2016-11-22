@@ -43,8 +43,7 @@ int main() {
 
    // prepare database
    sql_open(DATABASE);
-   sql_cmd("CREATE TABLE IF NOT EXISTS raw_data(timestamp INTEGER PRIMARY KEY "
-    "ASC, measurement REAL NOT NULL);", NULL);
+   sql_prep_table(DATABASE);
 
    // set up signal handlers
    signal(SIGINT, interrupt);
