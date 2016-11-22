@@ -21,19 +21,24 @@
 #include "cactus_sql.h"
 #include "coap.h"
 
+static int socket_fd;
+
 void interrupt(int signal) {
+   printf("\n");
    sql_cmd("SELECT * FROM raw_data;", sql_print);
 }
 
 void quit(int signal) {
    interrupt(signal);
+   close(socket_fd);
+   sql_close();
 
    exit(0);
 }
 
 int main() {
    struct sockaddr_in server_addr, client_addr;
-   int socket_fd, client_len = sizeof client_addr;
+   int client_len = sizeof client_addr;
    char ok = 1, packets = 1, ackCt = 1;
 
    // prepare database
@@ -136,7 +141,6 @@ int main() {
       }
    }
 
-   // something went wrong
    close(socket_fd);
    sql_close();
 
