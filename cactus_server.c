@@ -25,7 +25,7 @@ static int socket_fd;
 
 void interrupt(int signal) {
    printf("\n");
-   sql_cmd("SELECT * FROM raw_data;", sql_print);
+   sql_cmd("SELECT * FROM measurements;", sql_print);
 }
 
 void quit(int signal) {
