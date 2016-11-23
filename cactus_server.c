@@ -26,10 +26,6 @@ static int socket_fd;
 void interrupt(int signal) {
    printf("\n");
    sql_cmd("SELECT * FROM measurements;", sql_print);
-}
-
-void quit(int signal) {
-   interrupt(signal);
    close(socket_fd);
    sql_close();
 
@@ -45,9 +41,8 @@ int main() {
    sql_open(DATABASE);
    sql_prep_table(DATABASE);
 
-   // set up signal handlers
+   // set up interrupt handler
    signal(SIGINT, interrupt);
-   signal(SIGQUIT, quit);
 
    // create UDP socket
    socket_fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
