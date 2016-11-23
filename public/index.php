@@ -7,7 +7,7 @@ Assignment: Final Project
 References:
    http://raspberrywebserver.com/cgiscripting/rpi-temperature-logger/
     building-an-sqlite-temperature-logger.html
-   https://google-developers.appspot.com/chart/interactive/docs/quick_start
+   https://google-developers.appspot.com/chart/interactive/docs/
 -->
 
 <html>
@@ -20,17 +20,28 @@ References:
 
          function drawChart() {
             var data = new google.visualization.arrayToDataTable([
-               ['Time', 'Measurement'],
+               ['Time', '% Moisture'],
                <?php
                   $db = new SQLite3('../test.db');
 
                   $results = $db->query('SELECT * FROM measurements');
                   while ($row = $results->fetchArray())
-                     echo '[\'', date('r', $row[0]), '\', ', $row[1], '],';
+                     echo '[new Date(', $row[0] * 1000, '), ', $row[1], '],';
                ?>
             ]);
-            var options = {'title':'Measurements'};
-            var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+            var options = {
+               title: 'Moisture Measurements',
+               animation: {
+                  duration: 1000,
+                  easing: 'out',
+                  startup: true
+               },
+               vAxis: {
+                  minValue: 0,
+                  maxValue: 100
+               }
+            };
+            var chart = new google.visualization.AreaChart(document.getElementById('chart_div'));
 
             chart.draw(data, options);
          }
