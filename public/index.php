@@ -24,7 +24,7 @@ References:
                <?php
                   $db = new SQLite3('../test.db');
 
-                  $results = $db->query('SELECT * FROM raw_data');
+                  $results = $db->query('SELECT * FROM measurements');
                   while ($row = $results->fetchArray())
                      echo '[\'', date('r', $row[0]), '\', ', $row[1], '],';
                ?>
