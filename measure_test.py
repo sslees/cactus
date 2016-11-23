@@ -4,6 +4,8 @@
 # Class: CPE 458-01
 # Assignment: Final Project
 
-TEST_VAL = 512
+from random import randint
+
+TEST_VAL = randint(0, 1023)
 
 print('%04d' % TEST_VAL)
