@@ -4,11 +4,16 @@ Author: Samuel Lees (sslees)
 Date: 11/22/16
 Class: CPE 458-01
 Assignment: Final Project
+References:
+   http://raspberrywebserver.com/cgiscripting/rpi-temperature-logger/
+    building-an-sqlite-temperature-logger.html
+   https://google-developers.appspot.com/chart/interactive/docs/quick_start
 -->
 
 <html>
    <head>
-      <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+      <script type="text/javascript"
+       src="https://www.gstatic.com/charts/loader.js"></script>
       <script type="text/javascript">
          google.charts.load('current', {'packages':['corechart']});
          google.charts.setOnLoadCallback(drawChart);

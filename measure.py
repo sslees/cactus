@@ -1,11 +1,11 @@
 # File: measure.py
-# Author: Matthew Lindly (mlindly)
+# Author: Matthew Lindly (mlindly) and Samuel Lees (sslees)
 # Date: 11/16/16
 # Class: CPE 458-01
 # Assignment: Final Project
 # References:
 #    http://www.raspberrypi-spy.co.uk/2013/10/
-#       analogue-sensors-on-the-raspberry-pi-using-an-mcp3008/
+#     analogue-sensors-on-the-raspberry-pi-using-an-mcp3008/
 
 # Monitor moisture sensor on MCP3008 ADC, Channel 0.
 

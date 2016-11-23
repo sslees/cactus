@@ -1,5 +1,5 @@
 # File: measure_test.py
-# Author: Matthew Lindly (mlindly)
+# Author: Matthew Lindly (mlindly) and Samuel Lees (sslees)
 # Date: 11/16/16
 # Class: CPE 458-01
 # Assignment: Final Project
