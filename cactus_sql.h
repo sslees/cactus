@@ -9,7 +9,7 @@
 #ifndef CACTUS_SQL_H
 #define CACTUS_SQL_H
 
-#define DATABASE "test.db"
+#define DATABASE "data.sqlite3"
 
 void sql_open(char *dbName);
 void sql_prep_table(char *dbName);
