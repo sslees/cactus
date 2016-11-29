@@ -18,4 +18,4 @@ for timestamp in range(JAN_1_2016_PST, JAN_1_2016_PST + S_PER_LEAP_YR,
    measurement = (S_PER_WK - timestamp % S_PER_WK) * MAX_VAL / S_PER_WK + \
     randint(-VARIANCE, VARIANCE) # weekly watering cycles with variance
    print('{},{}'.format(timestamp, (0 if measurement < 0 else MAX_VAL if
-    measurement > MAX_VAL else measurement) / MAX_VAL)) # output percentage
+    measurement > MAX_VAL else measurement) / MAX_VAL * 100)) # percentage
