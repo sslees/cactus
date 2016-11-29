@@ -15,7 +15,7 @@
 
 #define HOSTNAME "cactus.sslees.com"
 #define PORT 5683
-#define MEASURE_SCRIPT "measure_test.py"
+#define MEASURE_SCRIPT "test_util/random_measure.py"
 #define PAYLOAD_LEN 16
 #define BUFF_LEN 255
 
