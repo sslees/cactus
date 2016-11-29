@@ -24,7 +24,7 @@ References:
             var data = new google.visualization.arrayToDataTable([
                ['Time', '% Moisture'],
                <?php
-                  $db = new SQLite3('../test.db');
+                  $db = new SQLite3('../data.sqlite3');
 
                   $results = $db->query('SELECT * FROM measurements');
                   while ($row = $results->fetchArray())
