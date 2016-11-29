@@ -7,4 +7,5 @@
 cactus_client
 cactus_server
 *.db
+*.csv
 *.dSYM
