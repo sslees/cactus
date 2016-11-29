@@ -28,8 +28,8 @@ void sql_open(char *dbName) {
 }
 
 void sql_prep_table(char *dbName) {
-   sql_cmd("CREATE TABLE IF NOT EXISTS measurements(timestamp INTEGER PRIMARY "
-    "KEY ASC, measurement REAL NOT NULL);", NULL);
+   sql_cmd("CREATE TABLE IF NOT EXISTS measurements(timestamp INTEGER NOT NULL "
+    "UNIQUE, measurement REAL NOT NULL);", NULL);
 }
 
 void sql_cmd(char *cmd, int (*callback)(void *, int, char **, char **)) {
