@@ -26,7 +26,8 @@ References:
                <?php
                   $db = new SQLite3('../data.sqlite3');
 
-                  $results = $db->query('SELECT * FROM measurements');
+                  $results = $db->query('SELECT * FROM measurements WHERE ' .
+                   'rowid % 10000000 = 0');
                   while ($row = $results->fetchArray())
                      echo '[new Date(', $row[0] * 1000, '), ', $row[1], '],';
                ?>

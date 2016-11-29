@@ -6,6 +6,6 @@
 
 cactus_client
 cactus_server
-*.db
+*.sqlite3
 *.csv
 *.dSYM
