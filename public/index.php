@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+
 <!--
 File: index.php
 Author: Samuel Lees (sslees)
@@ -31,11 +33,6 @@ References:
             ]);
             var options = {
                title: 'Moisture Measurements',
-               animation: {
-                  duration: 1000,
-                  easing: 'out',
-                  startup: true
-               },
                vAxis: {
                   minValue: 0,
                   maxValue: 100
@@ -49,5 +46,33 @@ References:
    </head>
    <body>
       <div id="chart_div"></div>
+      <form action="" method="POST">
+         <table style="width: 70%; margin: auto">
+            <tr>
+               <td>change scale:</td>
+               <td style="text-align: center">
+                  <button name="scale" value="day">Today</button>
+               </td>
+               <td style="text-align: center">
+                  <button name="scale" value="week">This Week</button>
+               </td>
+               <td style="text-align: center">
+                  <button name="scale" value="month">This Month</button>
+               </td>
+               <td style="text-align: center">
+                  <button name="scale" value="3month">3 Months</button>
+               </td>
+               <td style="text-align: center">
+                  <button name="scale" value="6month">6 Months</button>
+               </td>
+               <td style="text-align: center">
+                  <button name="scale" value="year">This Year</button>
+               </td>
+            </tr>
+            <tr>
+               <td>current scale: <?php echo $_POST['scale'] ?></td>
+            </tr>
+         </table>
+      </form>
    </body>
 </html>
