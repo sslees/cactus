@@ -26,17 +26,55 @@ References:
                <?php
                   $db = new SQLite3('../data.sqlite3');
 
-                  $results = $db->query('SELECT * FROM measurements WHERE ' .
-                   'rowid % 10000000 = 0');
+                  if (isset($_POST['scale']) and
+                   $_POST['scale'] == 'year') {
+                     $results = $db->query('SELECT * FROM measurements WHERE ' .
+                      'timestamp > strftime(\'%s\',\'now\',\'-1 year\') AND ' .
+                      'timestamp < strftime(\'%s\', \'now\') AND ' .
+                      'rowid % 105 = 0;');
+                  } elseif (isset($_POST['scale']) and
+                   $_POST['scale'] == '6month') {
+                     $results = $db->query('SELECT * FROM measurements WHERE ' .
+                      'timestamp > strftime(\'%s\',\'now\',\'-6 month\') AND ' .
+                      'timestamp < strftime(\'%s\', \'now\') AND ' .
+                      'rowid % 51 = 0;');
+                  } elseif (isset($_POST['scale']) and
+                   $_POST['scale'] == '3month') {
+                     $results = $db->query('SELECT * FROM measurements WHERE ' .
+                      'timestamp > strftime(\'%s\',\'now\',\'-3 month\') AND ' .
+                      'timestamp < strftime(\'%s\', \'now\') AND ' .
+                      'rowid % 25 = 0;');
+                  } elseif (isset($_POST['scale']) and
+                   $_POST['scale'] == 'month') {
+                     $results = $db->query('SELECT * FROM measurements WHERE ' .
+                      'timestamp > strftime(\'%s\',\'now\',\'-1 month\') AND ' .
+                      'timestamp < strftime(\'%s\', \'now\') AND ' .
+                      'rowid % 8 = 0;');
+                  } elseif (isset($_POST['scale']) and
+                   $_POST['scale'] == 'week') {
+                     $results = $db->query('SELECT * FROM measurements WHERE ' .
+                      'timestamp > strftime(\'%s\',\'now\',\'-7 day\') AND ' .
+                      'timestamp < strftime(\'%s\', \'now\') AND ' .
+                      'rowid % 2 = 0;');
+                  } else {
+                     $results = $db->query('SELECT * FROM measurements WHERE ' .
+                      'timestamp > strftime(\'%s\',\'now\',\'-1 day\') AND ' .
+                      'timestamp < strftime(\'%s\', \'now\');');
+                  }
+
                   while ($row = $results->fetchArray())
                      echo '[new Date(', $row[0] * 1000, '), ', $row[1], '],';
                ?>
             ]);
             var options = {
-               title: 'Moisture Measurements',
+               title: 'Historical Moisture Measurements',
+               legend: {
+                  position: 'none'
+               },
                vAxis: {
-                  minValue: 0,
-                  maxValue: 100
+                  title: '% Moisture',
+                  maxValue: 100,
+                  minValue: 0
                }
             };
             var chart = new google.visualization.AreaChart(document.getElementById('chart_div'));
@@ -50,7 +88,7 @@ References:
       <form action="" method="POST">
          <table style="width: 70%; margin: auto">
             <tr>
-               <td>change scale:</td>
+               <td>Scale:</td>
                <td style="text-align: center">
                   <button name="scale" value="day">Today</button>
                </td>
@@ -69,9 +107,6 @@ References:
                <td style="text-align: center">
                   <button name="scale" value="year">This Year</button>
                </td>
-            </tr>
-            <tr>
-               <td>current scale: <?php echo $_POST['scale'] ?></td>
             </tr>
          </table>
       </form>
