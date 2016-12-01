@@ -30,36 +30,29 @@ References:
                    $_POST['scale'] == 'year') {
                      $results = $db->query('SELECT * FROM measurements WHERE ' .
                       'timestamp > strftime(\'%s\',\'now\',\'-1 year\') AND ' .
-                      'timestamp < strftime(\'%s\', \'now\') AND ' .
+                      'timestamp <= strftime(\'%s\', \'now\') AND ' .
                       'rowid % 105 = 0;');
-                  } elseif (isset($_POST['scale']) and
-                   $_POST['scale'] == '6month') {
-                     $results = $db->query('SELECT * FROM measurements WHERE ' .
-                      'timestamp > strftime(\'%s\',\'now\',\'-6 month\') AND ' .
-                      'timestamp < strftime(\'%s\', \'now\') AND ' .
-                      'rowid % 51 = 0;');
-                  } elseif (isset($_POST['scale']) and
-                   $_POST['scale'] == '3month') {
-                     $results = $db->query('SELECT * FROM measurements WHERE ' .
-                      'timestamp > strftime(\'%s\',\'now\',\'-3 month\') AND ' .
-                      'timestamp < strftime(\'%s\', \'now\') AND ' .
-                      'rowid % 25 = 0;');
                   } elseif (isset($_POST['scale']) and
                    $_POST['scale'] == 'month') {
                      $results = $db->query('SELECT * FROM measurements WHERE ' .
                       'timestamp > strftime(\'%s\',\'now\',\'-1 month\') AND ' .
-                      'timestamp < strftime(\'%s\', \'now\') AND ' .
+                      'timestamp <= strftime(\'%s\', \'now\') AND ' .
                       'rowid % 8 = 0;');
                   } elseif (isset($_POST['scale']) and
                    $_POST['scale'] == 'week') {
                      $results = $db->query('SELECT * FROM measurements WHERE ' .
                       'timestamp > strftime(\'%s\',\'now\',\'-7 day\') AND ' .
-                      'timestamp < strftime(\'%s\', \'now\') AND ' .
+                      'timestamp <= strftime(\'%s\', \'now\') AND ' .
                       'rowid % 2 = 0;');
-                  } else {
+                  } elseif (isset($_POST['scale']) and
+                   $_POST['scale'] == 'day') {
                      $results = $db->query('SELECT * FROM measurements WHERE ' .
                       'timestamp > strftime(\'%s\',\'now\',\'-1 day\') AND ' .
-                      'timestamp < strftime(\'%s\', \'now\');');
+                      'timestamp <= strftime(\'%s\', \'now\');');
+                  } else {
+                     $results = $db->query('SELECT * FROM measurements WHERE ' .
+                      'timestamp > strftime(\'%s\',\'now\',\'-1 hour\') AND ' .
+                      'timestamp <= strftime(\'%s\', \'now\');');
                   }
 
                   while ($row = $results->fetchArray())
@@ -90,22 +83,19 @@ References:
             <tr>
                <td>Scale:</td>
                <td style="text-align: center">
-                  <button name="scale" value="day">Today</button>
+                  <button name="scale" value="hour">Past Hour</button>
                </td>
                <td style="text-align: center">
-                  <button name="scale" value="week">This Week</button>
+                  <button name="scale" value="day">Past Day</button>
                </td>
                <td style="text-align: center">
-                  <button name="scale" value="month">This Month</button>
+                  <button name="scale" value="week">Past Week</button>
                </td>
                <td style="text-align: center">
-                  <button name="scale" value="3month">3 Months</button>
+                  <button name="scale" value="month">Past Month</button>
                </td>
                <td style="text-align: center">
-                  <button name="scale" value="6month">6 Months</button>
-               </td>
-               <td style="text-align: center">
-                  <button name="scale" value="year">This Year</button>
+                  <button name="scale" value="year">Past Year</button>
                </td>
             </tr>
          </table>
