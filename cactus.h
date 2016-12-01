@@ -18,6 +18,8 @@
 #define MEASURE_SCRIPT "test_util/random_measure.py"
 #define PAYLOAD_LEN 16
 #define BUFF_LEN 255
+#define S_BETWEEN_UPDATES 5
+#define S_BETWEEN_STORES 60
 
 void build_payload(u_char *payload, time_t timestamp, double measurement);
 time_t parse_timestamp(u_char *packet);

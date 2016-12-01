@@ -31,24 +31,25 @@ References:
                      $results = $db->query('SELECT * FROM measurements WHERE ' .
                       'timestamp > strftime(\'%s\',\'now\',\'-1 year\') AND ' .
                       'timestamp <= strftime(\'%s\', \'now\') AND ' .
-                      'rowid % 105 = 0;');
+                      'rowid % 525 = 0;');
                   } elseif (isset($_POST['scale']) and
                    $_POST['scale'] == 'month') {
                      $results = $db->query('SELECT * FROM measurements WHERE ' .
                       'timestamp > strftime(\'%s\',\'now\',\'-1 month\') AND ' .
                       'timestamp <= strftime(\'%s\', \'now\') AND ' .
-                      'rowid % 8 = 0;');
+                      'rowid % 160 = 0;');
                   } elseif (isset($_POST['scale']) and
                    $_POST['scale'] == 'week') {
                      $results = $db->query('SELECT * FROM measurements WHERE ' .
                       'timestamp > strftime(\'%s\',\'now\',\'-7 day\') AND ' .
                       'timestamp <= strftime(\'%s\', \'now\') AND ' .
-                      'rowid % 2 = 0;');
+                      'rowid % 40 = 0;');
                   } elseif (isset($_POST['scale']) and
                    $_POST['scale'] == 'day') {
                      $results = $db->query('SELECT * FROM measurements WHERE ' .
                       'timestamp > strftime(\'%s\',\'now\',\'-1 day\') AND ' .
-                      'timestamp <= strftime(\'%s\', \'now\');');
+                      'timestamp <= strftime(\'%s\', \'now\') AND ' .
+                      'rowid % 5 = 0;');
                   } else {
                      $results = $db->query('SELECT * FROM measurements WHERE ' .
                       'timestamp > strftime(\'%s\',\'now\',\'-1 hour\') AND ' .

@@ -133,7 +133,7 @@ int main() {
          }
       }
 
-      if (ok) sleep(3);
+      if (ok) sleep(S_BETWEEN_UPDATES);
    }
 
    close(socket_fd);

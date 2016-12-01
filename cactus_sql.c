@@ -13,9 +13,11 @@
 #include <time.h>
 
 #include "cactus_sql.h"
+#include "cactus.h"
 #include "sqlite3.h"
 
 static sqlite3 *db;
+static time_t latest;
 
 void sql_open(char *dbName) {
    if (sqlite3_open(dbName, &db)) {
@@ -46,16 +48,31 @@ void sql_cmd(char *cmd, int (*callback)(void *, int, char **, char **)) {
 void sql_store_data(time_t timestamp, double measurement) {
    sqlite3_stmt *stmt;
 
-   sqlite3_prepare_v2(db, "INSERT INTO measurements VALUES(?1, ?2);", -1,
-    &stmt, NULL);
-   sqlite3_bind_int(stmt, 1, timestamp);
-   sqlite3_bind_double(stmt, 2, measurement);
-   if (sqlite3_step(stmt) != SQLITE_DONE) {
-      fprintf(stderr, "SQL error: %s\nTerminating.\n", sqlite3_errmsg(db));
+   sql_cmd("SELECT timestamp FROM measurements WHERE rowid = "
+    "(SELECT max(rowid) FROM measurements);", sql_update_latest);
+   if (timestamp >= latest + S_BETWEEN_STORES) {
+      sqlite3_prepare_v2(db, "INSERT INTO measurements VALUES(?1, ?2);", -1,
+       &stmt, NULL);
+      sqlite3_bind_int(stmt, 1, timestamp);
+      sqlite3_bind_double(stmt, 2, measurement);
+      if (sqlite3_step(stmt) != SQLITE_DONE) {
+         fprintf(stderr, "SQL error: %s\nTerminating.\n", sqlite3_errmsg(db));
 
-      exit(1);
+         exit(1);
+      }
+      sqlite3_finalize(stmt);
    }
-   sqlite3_finalize(stmt);
+}
+
+int sql_update_latest(void *notUsed, int argc, char **argv, char **colName) {
+   int i;
+
+   for (i = 0; i < argc; i++)
+      printf("%s: %s, ", colName[i], argv[i] ? argv[i] : "NULL");
+
+   latest = 0;
+
+   return 0;
 }
 
 int sql_print(void *notUsed, int argc, char **argv, char **colName) {
