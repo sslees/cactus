@@ -2,7 +2,7 @@
 
 <!--
 File: index.php
-Author: Samuel Lees (sslees)
+Author: Samuel Lees (sslees) and Matthew Lindly (mlindly)
 Date: 11/22/16
 Class: CPE 458-01
 Assignment: Final Project
@@ -14,23 +14,6 @@ References:
 
 <html>
    <head>
-      <meta http-equiv="refresh" content="5" >
-
-<script type="text/javascript" src="//code.jquery.com/jquery-2.1.0.js"></script>
-<style type="text/css">body {display: none;}</style>
-<script type='text/javascript'>//<![CDATA[
-$(window).load(function(){
-$(function(){
-$('body').fadeIn(1000);
-setTimeout(function(){
-$('body').fadeOut(1000, function(){
-location.reload(true);
-});
-}, 4000);
-});
-});//]]>
-</script>
-
       <script type="text/javascript"
        src="https://www.gstatic.com/charts/loader.js"></script>
       <script type="text/javascript">
@@ -40,88 +23,71 @@ location.reload(true);
          google.charts.setOnLoadCallback(drawCurrentChart);
          google.charts.setOnLoadCallback(drawMaximumChart);
 
-         <!-- ////////////////////////////////////////////////// -->
          function drawMinimumChart() {
+            var data = google.visualization.arrayToDataTable(
+               [['Label', 'Value'], ['', <?php
+                  $db = new SQLite3('../data.sqlite3');
 
-           var data = google.visualization.arrayToDataTable([
-             ['Label', 'Value'],
-             ['',
-             <?php
-               $db = new SQLite3('../data.sqlite3');
+                  echo $db->query('SELECT measurement FROM stats WHERE ' .
+                   'parameter = \'minimum\';')->fetchArray()[0];
+               ?>]]
+            );
+            var options = {
+               height: 450,
+               yellowFrom: 0, yellowTo: 30,
+               greenFrom: 20, greenTo: 80, greenColor: '#009900',
+               redFrom: 70, redTo: 100, redColor: '#0099FF',
+               minorTicks: 5
+            };
+            var chart = new google.visualization.Gauge(
+             document.getElementById('minimum_chart_div'));
 
-               echo $db->query('SELECT measurement FROM stats WHERE ' .
-                'parameter = \'minimum\';')->fetchArray()[0];
-             ?>
-             ],
-           ]);
-
-           var options = {
-             height: 450,
-             yellowFrom: 0, yellowTo: 30,
-             greenFrom: 20, greenTo: 80, greenColor: '#009900',
-             redFrom: 70, redTo: 100, redColor: '#0099FF',
-             minorTicks: 5
-           };
-
-           var chart = new google.visualization.Gauge(document.getElementById('min_chart_div'));
-
-           chart.draw(data, options);
+            chart.draw(data, options);
          }
 
          function drawCurrentChart() {
+            var data = google.visualization.arrayToDataTable(
+               [['Label', 'Value'], ['', <?php
+                  $db = new SQLite3('../data.sqlite3');
 
-           var data = google.visualization.arrayToDataTable([
-             ['Label', 'Value'],
-             ['',
-             <?php
-               $db = new SQLite3('../data.sqlite3');
+                  echo $db->query('SELECT measurement FROM stats WHERE ' .
+                   'parameter = \'current\';')->fetchArray()[0];
+               ?>]]
+            );
+            var options = {
+               height: 450,
+               yellowFrom: 0, yellowTo: 30,
+               greenFrom: 20, greenTo: 80, greenColor: '#009900',
+               redFrom: 70, redTo: 100, redColor: '#0099FF',
+               minorTicks: 5
+            };
+            var chart = new google.visualization.Gauge(
+             document.getElementById('current_chart_div'));
 
-               echo $db->query('SELECT measurement FROM stats WHERE ' .
-                'parameter = \'current\';')->fetchArray()[0];
-             ?>
-             ],
-           ]);
-
-           var options = {
-             height: 450,
-             yellowFrom: 0, yellowTo: 30,
-             greenFrom: 20, greenTo: 80, greenColor: '#009900',
-             redFrom: 70, redTo: 100, redColor: '#0099FF',
-             minorTicks: 5
-           };
-
-           var chart = new google.visualization.Gauge(document.getElementById('cur_chart_div'));
-
-           chart.draw(data, options);
+            chart.draw(data, options);
          }
 
          function drawMaximumChart() {
+            var data = google.visualization.arrayToDataTable(
+               [['Label', 'Value'], ['', <?php
+                  $db = new SQLite3('../data.sqlite3');
 
-           var data = google.visualization.arrayToDataTable([
-             ['Label', 'Value'],
-             ['',
-             <?php
-               $db = new SQLite3('../data.sqlite3');
+                  echo $db->query('SELECT measurement FROM stats WHERE ' .
+                   'parameter = \'maximum\';')->fetchArray()[0];
+               ?>]]
+            );
+            var options = {
+               height: 450,
+               yellowFrom: 0, yellowTo: 30,
+               greenFrom: 20, greenTo: 80, greenColor: '#009900',
+               redFrom: 70, redTo: 100, redColor: '#0099FF',
+               minorTicks: 5
+            };
+            var chart = new google.visualization.Gauge(
+             document.getElementById('maximum_chart_div'));
 
-               echo $db->query('SELECT measurement FROM stats WHERE ' .
-                'parameter = \'maximum\';')->fetchArray()[0];
-             ?>
-             ],
-           ]);
-
-           var options = {
-             height: 450,
-             yellowFrom: 0, yellowTo: 30,
-             greenFrom: 20, greenTo: 80, greenColor: '#009900',
-             redFrom: 70, redTo: 100, redColor: '#0099FF',
-             minorTicks: 5
-           };
-
-           var chart = new google.visualization.Gauge(document.getElementById('max_chart_div'));
-
-           chart.draw(data, options);
+            chart.draw(data, options);
          }
-         <!-- ////////////////////////////////////////////////// -->
 
          function drawHistoryChart() {
             var data = new google.visualization.arrayToDataTable([
@@ -174,36 +140,35 @@ location.reload(true);
                   minValue: 0
                }
             };
-            var chart = new google.visualization.AreaChart(document.getElementById('chart_div'));
+            var chart = new google.visualization.AreaChart(
+             document.getElementById('chart_div'));
 
             chart.draw(data, options);
          }
       </script>
    </head>
    <body>
-      <!-- ////////////////////////////////////////////////// -->
       <table style="width: 60%; margin: auto">
          <tr>
-            <td align="center" valign="bottom" width="25%">
-               <div id="min_chart_div"></div>
+            <td style="text-align: center; vertical-align: bottom; width: 25%">
+               <div id="minimum_chart_div"></div>
             </td>
-            <td align="center" valign="bottom" width="50%">
-               <div id="cur_chart_div"></div>
+            <td style="text-align: center; vertical-align: bottom; width: 50%">
+               <div id="current_chart_div"></div>
             </td>
-            <td align="center" valign="bottom" width="25%">
-               <div id="max_chart_div"></div>
+            <td style="text-align: center; vertical-align: bottom; width: 25%">
+               <div id="maximum_chart_div"></div>
             </td>
          </tr>
          <tr>
-            <td style="text-align: center; font-family: arial; font-size: 2vw"
-             valign="top">Minimum</td>
-            <td style="text-align: center; font-family: arial; font-size: 4vw"
-             valign="top">Current</td>
-            <td style="text-align: center; font-family: arial; font-size: 2vw"
-             valign="top">Maximum</td>
+            <td style="text-align: center; font-family: arial; font-size: 2vw;
+             vertical-align: top">24-Hr. Min.</td>
+            <td style="text-align: center; font-family: arial; font-size: 4vw;
+             vertical-align: top">Current</td>
+            <td style="text-align: center; font-family: arial; font-size: 2vw;
+             vertical-align: top">24-Hr. Max.</td>
          </tr>
       </table>
-      <!-- ////////////////////////////////////////////////// -->
       <div id="chart_div"></div>
       <form action="" method="POST">
          <table style="width: 70%; margin: auto">
