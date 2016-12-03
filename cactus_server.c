@@ -52,7 +52,10 @@ int main() {
 
    // continuously recieve and process data
    while (ok) {
-      buffer_t empty = {.data = (u_char *) "", .len = 0}, response;
+      buffer_t response;
+      char validPath;
+      time_t timestamp;
+      double measurement;
 
       // recieve and process ACK and data (1 loop each)
       while (packets-- && ok) {
@@ -81,19 +84,22 @@ int main() {
                ok = 0;
                printf("Expected ACK. Terminating.\n");
             } else {
+               const buffer_t empty = {.data = (u_char *) "", .len = 0};
+
                int code = parse_code((u_char *) request);
 
                if (code == MC_POST) {
+
                   buffer_t ack = build_ack(parse_message_id((u_char *)
                    request));
 
-                  if (!strcmp(parse_path((u_char *) request), "/data")) {
-                     time_t timestamp =
+                  if ((validPath =
+                   !strcmp(parse_path((u_char *) request), "/data"))) {
+                     timestamp =
                       parse_timestamp(parse_payload((u_char *) request));
-                     double measurement =
+                     measurement =
                       parse_measurement(parse_payload((u_char *) request));
 
-                     sql_store_data(timestamp, measurement);
                      printf("timestamp: %ld, measurement: %lf\n", timestamp,
                       measurement);
 
@@ -126,6 +132,9 @@ int main() {
           &client_addr, client_len);
          free(response.data);
          printf("Sent response.\n");
+
+         // process data after response sent
+         if (validPath) sql_process_data(timestamp, measurement);
 
          // set up next cycle
          packets = 2;

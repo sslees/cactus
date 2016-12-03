@@ -10,9 +10,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/wait.h>
 #include <time.h>
-#include <unistd.h>
 
 #include "cactus_sql.h"
 #include "cactus.h"
@@ -21,7 +19,8 @@
 #define COMPARE_VALS 12
 
 static sqlite3 *db;
-static time_t latest_timestamp;
+static long tempCt;
+static double latestAvg;
 
 void sql_open(char *dbName) {
    if (sqlite3_open(dbName, &db)) {
@@ -36,6 +35,10 @@ void sql_open(char *dbName) {
 void sql_prep_table(char *dbName) {
    sql_cmd("CREATE TABLE IF NOT EXISTS measurements(timestamp INTEGER NOT NULL "
     "UNIQUE, measurement REAL NOT NULL);", NULL);
+   sql_cmd("CREATE TABLE IF NOT EXISTS temps(timestamp INTEGER NOT NULL "
+    "UNIQUE, measurement REAL NOT NULL);", NULL);
+   sql_cmd("CREATE TABLE IF NOT EXISTS stats(parameter TEXT NOT NULL UNIQUE, "
+    "timestamp INTEGER NOT NULL, measurement REAL NOT NULL);", NULL);
 }
 
 void sql_cmd(char *cmd, int (*callback)(void *, int, char **, char **)) {
@@ -49,66 +52,68 @@ void sql_cmd(char *cmd, int (*callback)(void *, int, char **, char **)) {
    }
 }
 
-void sql_store_data(time_t timestamp, double measurement) {
-   static double recent[] =
-    {-1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-
+void sql_process_data(time_t timestamp, double measurement) {
    sqlite3_stmt *stmt;
-   int i;
-   double sum = 0.0;
 
-   sql_cmd("SELECT timestamp FROM measurements WHERE rowid = "
-    "(SELECT max(rowid) FROM measurements);", sql_update_latest);
-   if (timestamp >= latest_timestamp + S_BETWEEN_STORES) {
-      sqlite3_prepare_v2(db, "INSERT INTO measurements VALUES(?1, ?2);", -1,
-       &stmt, NULL);
-      sqlite3_bind_int(stmt, 1, timestamp);
-      sqlite3_bind_double(stmt, 2, measurement);
-      if (sqlite3_step(stmt) != SQLITE_DONE) {
-         fprintf(stderr, "SQL error: %s\nTerminating.\n", sqlite3_errmsg(db));
+   sqlite3_prepare_v2(db, "REPLACE INTO stats VALUES('current', ?1, ?2);", -1,
+    &stmt, NULL);
+   sqlite3_bind_int(stmt, 1, timestamp);
+   sqlite3_bind_double(stmt, 2, measurement);
+   if (sqlite3_step(stmt) != SQLITE_DONE) {
+      fprintf(stderr, "SQL error: %s\nTerminating.\n", sqlite3_errmsg(db));
 
-         exit(1);
-      }
-      sqlite3_finalize(stmt);
+      exit(1);
    }
-   if (recent[0] == -1.0)
-      for (i = 0; i < COMPARE_VALS; i++) recent[i] = measurement;
-   else {
-      for (i = 0; i < COMPARE_VALS - 1; i++) recent[i] = recent[i + 1];
-      recent[COMPARE_VALS - 1] = measurement;
+   sqlite3_finalize(stmt);
+
+   sql_cmd("DELETE FROM stats WHERE timestamp < "
+    "strftime(\'%s\', \'now\', \'-1 day\');", NULL);
+
+   sql_cmd("REPLACE INTO stats VALUES("
+    "   'minimum',"
+    "   (SELECT timestamp FROM stats WHERE measurement ="
+    "    (SELECT min(measurement) FROM stats)),"
+    "   (SELECT min(measurement) FROM stats)"
+    ");", NULL);
+
+   sql_cmd("REPLACE INTO stats VALUES("
+    "   'maximum',"
+    "   (SELECT timestamp FROM stats WHERE measurement ="
+    "    (SELECT max(measurement) FROM stats)),"
+    "   (SELECT max(measurement) FROM stats)"
+    ");", NULL);
+
+   sql_cmd("DELETE FROM temps WHERE timestamp < "
+    "strftime(\'%s\', \'now\', \'-3 minute\');", NULL);
+
+   sql_cmd("INSERT INTO temps VALUES("
+    "(SELECT timestamp FROM stats WHERE parameter = 'current'), "
+    "(SELECT measurement FROM stats WHERE parameter = 'current));", NULL);
+
+   sql_cmd("SELECT count(*) FROM temp;", sql_count_temps);
+   if (tempCt == SAMPLE_SIZE) {
+      sql_cmd("INSERT INTO measurements VALUES("
+       "(SELECT avg(timestamp) FROM temps), "
+       "(SELECT avg(measurement) FROM temps));", NULL);
+
+      sql_cmd("DELETE FROM temps;", NULL);
+
+      sql_cmd("SELECT measurement FROM measurements WHERE rowid = "
+       "last_insert_rowid();", sql_check_latest_avg);
+      if (latestAvg < DRY_THRESHOLD) notify();
    }
-   for (i = 0; i < COMPARE_VALS; i++) sum += recent[i];
-   if (sum / COMPARE_VALS < DRY_THRESHOLD) notify();
+
+   sql_cmd("VACUUM;", NULL);
 }
 
-void notify() {
-   int pipeFDs[2];
-
-   pipe(pipeFDs);
-   if (!fork()) { // if child
-      close(pipeFDs[1]); // close child pipe write
-      dup2(pipeFDs[0], 0); // forward child stdin to child pipe read
-      close(pipeFDs[0]); // close child pipe read
-      execlp(PYTHON_EXE, PYTHON_EXE, NOTIFY_SCRIPT, NULL); // run script
-   }
-   close(pipeFDs[0]); // close parent pipe read
-   wait(NULL); // wait for child to terminate
-   write(pipeFDs[1], /**data*/NULL, /*sizeof data*/0); // write data to parent pipe write
-   close(pipeFDs[1]); // close parent pipe write
-}
-
-int sql_update_latest(void *notUsed, int argc, char **argv, char **colName) {
-   latest_timestamp = *argv ? strtol(*argv, NULL, 10) : 0;
+int sql_count_temps(void *notUsed, int argc, char **argv, char **colName) {
+   tempCt = strtol(*argv, NULL, 10);
 
    return 0;
 }
 
-int sql_print(void *notUsed, int argc, char **argv, char **colName) {
-   int i;
-
-   for (i = 0; i < argc - 1; i++)
-      printf("%s: %s, ", colName[i], argv[i] ? argv[i] : "NULL");
-   printf("%s: %s\n", colName[i], argv[i] ? argv[i] : "NULL");
+int sql_check_latest_avg(void *notUsed, int argc, char **argv, char **colName) {
+   latestAvg = strtod(*argv, NULL);
 
    return 0;
 }
