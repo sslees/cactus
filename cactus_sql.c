@@ -90,7 +90,7 @@ void sql_process_data(time_t timestamp, double measurement) {
     "(SELECT timestamp FROM stats WHERE parameter = 'current'), "
     "(SELECT measurement FROM stats WHERE parameter = 'current'));", NULL);
 
-   sql_cmd("SELECT count(*) FROM temp;", sql_count_temps);
+   sql_cmd("SELECT count(*) FROM temps;", sql_count_temps);
    if (tempCt == SAMPLE_SIZE) {
       sql_cmd("INSERT INTO measurements VALUES("
        "(SELECT avg(timestamp) FROM temps), "
