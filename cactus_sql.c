@@ -67,7 +67,7 @@ void sql_process_data(time_t timestamp, double measurement) {
    sqlite3_finalize(stmt);
 
    sql_cmd("DELETE FROM stats WHERE timestamp < "
-    "strftime(\'%s\', \'now\', \'-1 day\');", NULL);
+    "strftime('%s', 'now', '-1 day');", NULL);
 
    sql_cmd("REPLACE INTO stats VALUES("
     "   'minimum',"
@@ -84,11 +84,11 @@ void sql_process_data(time_t timestamp, double measurement) {
     ");", NULL);
 
    sql_cmd("DELETE FROM temps WHERE timestamp < "
-    "strftime(\'%s\', \'now\', \'-3 minute\');", NULL);
+    "strftime('%s', 'now', '-3 minute');", NULL);
 
    sql_cmd("INSERT INTO temps VALUES("
     "(SELECT timestamp FROM stats WHERE parameter = 'current'), "
-    "(SELECT measurement FROM stats WHERE parameter = 'current));", NULL);
+    "(SELECT measurement FROM stats WHERE parameter = 'current'));", NULL);
 
    sql_cmd("SELECT count(*) FROM temp;", sql_count_temps);
    if (tempCt == SAMPLE_SIZE) {
