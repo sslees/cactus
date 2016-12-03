@@ -102,8 +102,6 @@ void sql_process_data(time_t timestamp, double measurement) {
        "last_insert_rowid();", sql_check_latest_avg);
       if (latestAvg < DRY_THRESHOLD) notify();
    }
-
-   sql_cmd("VACUUM;", NULL);
 }
 
 int sql_count_temps(void *notUsed, int argc, char **argv, char **colName) {
