@@ -53,6 +53,8 @@ void sql_cmd(char *cmd, int (*callback)(void *, int, char **, char **)) {
 }
 
 void sql_process_data(time_t timestamp, double measurement) {
+   static char dry = 0;
+
    sqlite3_stmt *stmt;
 
    sqlite3_prepare_v2(db, "REPLACE INTO stats VALUES('current', ?1, ?2);", -1,
@@ -100,7 +102,13 @@ void sql_process_data(time_t timestamp, double measurement) {
 
       sql_cmd("SELECT measurement FROM measurements WHERE rowid = "
        "last_insert_rowid();", sql_check_latest_avg);
-      if (latestAvg < DRY_THRESHOLD) notify();
+      if (latestAvg < DRY_THRESHOLD && !dry) {
+         dry = 1;
+         notify_dry();
+      } else if (latestAvg > WATERED_THRESHOLD && dry) {
+         dry = 0;
+         notify_watered();
+      }
    }
 }
 

@@ -35,8 +35,8 @@ References:
             var options = {
                height: 450,
                yellowFrom: 0, yellowTo: 30,
-               greenFrom: 20, greenTo: 80, greenColor: '#009900',
-               redFrom: 70, redTo: 100, redColor: '#0099FF',
+               greenFrom: 30, greenTo: 60, greenColor: '#009900',
+               redFrom: 60, redTo: 100, redColor: '#0099FF', // actually blue
                minorTicks: 5
             };
             var chart = new google.visualization.Gauge(
@@ -57,8 +57,8 @@ References:
             var options = {
                height: 450,
                yellowFrom: 0, yellowTo: 30,
-               greenFrom: 20, greenTo: 80, greenColor: '#009900',
-               redFrom: 70, redTo: 100, redColor: '#0099FF',
+               greenFrom: 30, greenTo: 60, greenColor: '#009900',
+               redFrom: 60, redTo: 100, redColor: '#0099FF', // actually blue
                minorTicks: 5
             };
             var chart = new google.visualization.Gauge(
@@ -79,8 +79,8 @@ References:
             var options = {
                height: 450,
                yellowFrom: 0, yellowTo: 30,
-               greenFrom: 20, greenTo: 80, greenColor: '#009900',
-               redFrom: 70, redTo: 100, redColor: '#0099FF',
+               greenFrom: 30, greenTo: 60, greenColor: '#009900',
+               redFrom: 60, redTo: 100, redColor: '#0099FF', // actually blue
                minorTicks: 5
             };
             var chart = new google.visualization.Gauge(
