@@ -4,6 +4,9 @@
 # Class: CPE 458-01
 # Assignment: Final Project
 
+public/*
+!public/gui.php
+resources/
 cactus_client
 cactus_server
 *.sqlite3
