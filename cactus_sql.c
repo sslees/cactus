@@ -17,6 +17,7 @@
 #include "sqlite3.h"
 
 #define COMPARE_VALS 12
+#define NOTIFICATOIN_INTERVAL_S 480 // 8 hrs.
 
 static sqlite3 *db;
 static long tempCt;
@@ -54,6 +55,7 @@ void sql_cmd(char *cmd, int (*callback)(void *, int, char **, char **)) {
 
 void sql_process_data(time_t timestamp, double measurement) {
    static char dry = 0;
+   static time_t lastNotified = 0;
 
    sqlite3_stmt *stmt;
 
@@ -102,11 +104,15 @@ void sql_process_data(time_t timestamp, double measurement) {
 
       sql_cmd("SELECT measurement FROM measurements WHERE rowid = "
        "last_insert_rowid();", sql_check_latest_avg);
-      if (latestAvg < DRY_THRESHOLD && !dry) {
+      if (latestAvg < DRY_THRESHOLD &&
+       (!dry | (dry && time() - lastNotified > NOTIFICATOIN_INTERVAL_S))) {
          dry = 1;
+         lastNotified = timestamp;
          notify_dry();
-      } else if (latestAvg > WATERED_THRESHOLD && dry) {
+      } else if (latestAvg > WATERED_THRESHOLD &&
+       (dry | (!dry && time() - lastNotified > NOTIFICATOIN_INTERVAL_S))) {
          dry = 0;
+         lastNotified = timestamp;
          notify_watered();
       }
    }
