@@ -51,7 +51,7 @@ int main() {
    // create UDP socket
    socket_fd = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
    setsockopt(socket_fd, SOL_SOCKET, SO_RCVTIMEO, &((struct timeval)
-    {.tv_sec = S_BETWEEN_UPDATES, .tv_usec = 0}), sizeof (struct timeval));
+    {.tv_sec = S_BETWEEN_UPDATES * 2, .tv_usec = 0}), sizeof (struct timeval));
    memset((char *) &server_addr, 0, sizeof server_addr);
    server_addr.sin_family = AF_INET;
    memcpy((char *) &server_addr.sin_addr.s_addr, (char *) server->h_addr,
