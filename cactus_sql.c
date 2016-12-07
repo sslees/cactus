@@ -105,12 +105,12 @@ void sql_process_data(time_t timestamp, double measurement) {
       sql_cmd("SELECT measurement FROM measurements WHERE rowid = "
        "last_insert_rowid();", sql_check_latest_avg);
       if (latestAvg < DRY_THRESHOLD &&
-       (!dry | (dry && time(NULL) - lastNotified > NOTIFICATOIN_INTERVAL_S))) {
+       (!dry || (dry && time(NULL) - lastNotified > NOTIFICATOIN_INTERVAL_S))) {
          dry = 1;
          lastNotified = timestamp;
          notify_dry();
       } else if (latestAvg > WATERED_THRESHOLD &&
-       (dry | (!dry && time(NULL) - lastNotified > NOTIFICATOIN_INTERVAL_S))) {
+       (dry || (!dry && time(NULL) - lastNotified > NOTIFICATOIN_INTERVAL_S))) {
          dry = 0;
          lastNotified = timestamp;
          notify_watered();
