@@ -6,3 +6,17 @@
 
 # cactus
 Internet of Things Final Project for CPE 458-01
+
+## Dependencies
+* Python 3.0
+  * `apt-get intall python3`
+* SPIdev
+  * `pip3 install spidev`
+* Apache
+  * `apt-get install apache2`
+
+## Installation
+* Configure Apache with `cactus.sslees.com.conf`; modify as necessary.
+* Compile with `make`.
+* Run server with `./cactus_server`.
+* Run client with `./cactus_client`.
