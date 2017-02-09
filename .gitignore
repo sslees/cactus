@@ -4,8 +4,8 @@
 # Class: CPE 458-01
 # Assignment: Final Project
 
-public/*
-!public/gui.php
+public/phase1/
+public/index.html
 resources/
 cactus_client
 cactus_server

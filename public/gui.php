@@ -14,6 +14,8 @@ References:
 
 <html>
    <head>
+      <meta http-equiv="refresh" content="5">
+
       <script type="text/javascript"
        src="https://www.gstatic.com/charts/loader.js"></script>
       <script type="text/javascript">
@@ -30,6 +32,8 @@ References:
 
                   echo $db->query('SELECT measurement FROM stats WHERE ' .
                    'parameter = \'minimum\';')->fetchArray()[0];
+
+                  $db->close();
                ?>]]
             );
             var options = {
@@ -52,6 +56,8 @@ References:
 
                   echo $db->query('SELECT measurement FROM stats WHERE ' .
                    'parameter = \'current\';')->fetchArray()[0];
+
+                  $db->close();
                ?>]]
             );
             var options = {
@@ -74,6 +80,8 @@ References:
 
                   echo $db->query('SELECT measurement FROM stats WHERE ' .
                    'parameter = \'maximum\';')->fetchArray()[0];
+
+                  $db->close();
                ?>]]
             );
             var options = {
@@ -93,6 +101,8 @@ References:
             var data = new google.visualization.arrayToDataTable([
                ['Time', '% Moisture'],
                <?php
+                  $db = new SQLite3('../data.sqlite3');
+
                   if (isset($_POST['scale']) and
                    $_POST['scale'] == 'year') {
                      $results = $db->query('SELECT * FROM measurements WHERE ' .
@@ -150,13 +160,16 @@ References:
    <body>
       <table style="width: 60%; margin: auto">
          <tr>
-            <td style="text-align: center; vertical-align: bottom; width: 25%">
+            <td style="align-content: center; vertical-align: bottom;
+             width: 25%">
                <div id="minimum_chart_div"></div>
             </td>
-            <td style="text-align: center; vertical-align: bottom; width: 50%">
+            <td style="align-content: center; vertical-align: bottom;
+             width: 50%">
                <div id="current_chart_div"></div>
             </td>
-            <td style="text-align: center; vertical-align: bottom; width: 25%">
+            <td style="align-content: center; vertical-align: bottom;
+             width: 25%">
                <div id="maximum_chart_div"></div>
             </td>
          </tr>
