@@ -1,12 +1,13 @@
 # File: .gitignore
 # Author: Samuel Lees (sslees)
-# Date: 11/05/16
+# Date: 2/22/16
 # Class: CPE 458-01
 # Assignment: Final Project
 
+TEMP/
+resources/
 public/phase1/
 public/index.html
-resources/
 cactus_client
 cactus_server
 *.sqlite3
