@@ -10,6 +10,8 @@ CREATE USER 'cactus'@'localhost' IDENTIFIED BY 'c@c7u$';
 GRANT ALL PRIVILEGES ON cactus.* TO 'cactus'@'localhost';
 FLUSH PRIVILEGES;
 
+update: httpd 2.2->2.4, php 5.4->5.6
+
 #### FIXME TODO ...
 
 
@@ -43,7 +45,7 @@ ssh pi@raspberrypi.local
 sudo raspi-config
 	8 Update
 	1 Change User Password: c@c7u$
-	2 Hostname: cactus1
+	2 Hostname: cactus
 	3 Boot Options
 		B1 Desktop / CLI: B1 Console
 		B2 Wait for Network at Boot: Yes
@@ -56,16 +58,20 @@ sudo raspi-config
 		I4 Change Wi-fi Country: US United States
    Finish: Yes (will reboot)
 
-ssh pi@cactus1.local
+ssh pi@cactus.local
 
 https://www.raspberrypi.org/documentation/configuration/wireless/wireless-cli.md
+wpa_passphrase "ssid" "password"
 sudo nano /etc/wpa_supplicant/wpa_supplicant.conf
 	network={
-		ssid="LeesNest"
+		ssid="ssid"
 		psk=0000000000000000000000000000000000000000000000000000000000000000
 	}
 sudo wpa_cli reconfigure &&
 ifconfig wlan0 | grep 'inet addr'
+
+sudo apt-get install -y python3 python3-pip
+pip3 install spidev
 
 sudo apt-get install -y git &&
 git clone https://github.com/sslees/cactus.git
