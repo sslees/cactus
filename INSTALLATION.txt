@@ -1,0 +1,71 @@
+Server:
+
+wget https://cdn.mysql.com//Downloads/Connector-Python/mysql-connector-python-2.1.5.zip
+unzip mysql-connector-python-2.1.5.zip
+cd mysql-connector-python-2.1.5
+sudo python3 setup.py install
+
+CREATE DATABASE cactus;
+CREATE USER 'cactus'@'localhost' IDENTIFIED BY 'c@c7u$';
+GRANT ALL PRIVILEGES ON cactus.* TO 'cactus'@'localhost';
+FLUSH PRIVILEGES;
+
+#### FIXME TODO ...
+
+
+
+
+
+
+
+CLIENT:
+
+https://www.raspberrypi.org/learning/software-guide/quickstart/
+
+https://downloads.raspberrypi.org/raspbian_lite_latest
+	http://director.downloads.raspberrypi.org/raspbian_lite/images/raspbian_lite-2017-03-03/2017-03-02-raspbian-jessie-lite.zip
+	SHA-1: 1778584c419208d919ca85e92a5cae16d1676090
+
+https://resin-production-downloads.s3.amazonaws.com/etcher/1.0.0-beta.19/Etcher-1.0.0-beta.19-darwin-x64.dmg
+
+https://www.raspberrypi.org/documentation/remote-access/ssh/README.md
+	3. ENABLE SSH ON A HEADLESS RASPBERRY PI
+
+ssh pi@raspberrypi.local
+
+sudo apt-get update &&
+sudo apt-get upgrade -y &&
+sudo apt-get autoremove &&
+sudo reboot
+
+ssh pi@raspberrypi.local
+
+sudo raspi-config
+	8 Update
+	1 Change User Password: c@c7u$
+	2 Hostname: cactus1
+	3 Boot Options
+		B1 Desktop / CLI: B1 Console
+		B2 Wait for Network at Boot: Yes
+	4 Localisation Options
+		I1 Change Locale
+			[ ] en_GB.UTF-8 UTF-8
+			[*] en_US.UTF-8 UTF-8
+				en_US.UTF-8
+		I2 Change Timezone: America: Los_Angeles
+		I4 Change Wi-fi Country: US United States
+   Finish: Yes (will reboot)
+
+ssh pi@cactus1.local
+
+https://www.raspberrypi.org/documentation/configuration/wireless/wireless-cli.md
+sudo nano /etc/wpa_supplicant/wpa_supplicant.conf
+	network={
+		ssid="LeesNest"
+		psk=0000000000000000000000000000000000000000000000000000000000000000
+	}
+sudo wpa_cli reconfigure &&
+ifconfig wlan0 | grep 'inet addr'
+
+sudo apt-get install -y git &&
+git clone https://github.com/sslees/cactus.git

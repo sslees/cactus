@@ -4,6 +4,11 @@
 [//]: # (Class: CPE 458-01)
 [//]: # (Assignment: Final Project)
 
+[//]: # '####'
+
+# FIXME TODO ...
+possibly see INSTALLATION.txt while this is unfinished
+
 # cactus
 Internet of Things Final Project for CPE 458-01
 

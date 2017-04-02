@@ -81,7 +81,7 @@ if ($result->num_rows > 0) {
     // output data of each row
     while($row = $result->fetch_assoc()) {
       if ($row["password"] == $newPassword) {
-        echo "Welcome " . $row["firstName"]. " " . $row["lastName"]. "! (id: " . $row["id"]. ")<br>" ;
+        echo "Welcome " . $row["firstName"]. " " . $row["lastName"]. "!<br>" ;
         // echo "<br>";
         // echo "Here's your info:";
         // echo "<br>";
