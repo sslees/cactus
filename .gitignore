@@ -4,12 +4,7 @@
 # Class: CPE 458-01
 # Assignment: Final Project
 
-TEMP/
-resources/
-public/phase1/
+__pycache__/
 public/index.html
-cactus_client
-cactus_server
-*.sqlite3
-*.csv
-*.dSYM
+public/phase1/
+resources/

@@ -11,7 +11,7 @@ from constants import *
 
 def initialize_db():
    cnx = mysql.connector.connect(
-      user=USER, password=PASSWORD, database=DATABASE)
+      user=DB_USER, password=DB_PASSWORD, database=DB_DATABASE)
    cursor = cnx.cursor()
    cursor.execute(
       "CREATE TABLE IF NOT EXISTS users ("
@@ -38,7 +38,7 @@ def initialize_db():
 
 def handle_device(uuid, ip):
    cnx = mysql.connector.connect(
-      user=USER, password=PASSWORD, database=DATABASE)
+      user=DB_USER, password=DB_PASSWORD, database=DB_DATABASE)
    cursor = cnx.cursor()
    cursor.execute('INSERT INTO devices (uuid, ip) VALUES (%s %s) '
       'ON DUPLICATE KEY UPDATE ip=VALUES(ip);', (uuid, ip))

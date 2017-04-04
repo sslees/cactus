@@ -12,6 +12,10 @@ FLUSH PRIVILEGES;
 
 update: httpd 2.2->2.4, php 5.4->5.6
 
+sudo yum install python35-pip
+sudo pip-3.5 install requests
+(for notifivations)
+
 #### FIXME TODO ...
 
 
