@@ -25,7 +25,7 @@ def initialize_db():
       "   ip VARCHAR(39),"
       "   user VARCHAR(254),"
       "   nickname VARCHAR(64),"
-      "   FOREIGN KEY (user) REFERENCES users (email));")
+      "   FOREIGN KEY (user) REFERENCES users (email) ON UPDATE CASCADE);")
    cursor.execute(
       "CREATE TABLE IF NOT EXISTS measurements ("
       "   id INTEGER AUTO_INCREMENT PRIMARY KEY,"
@@ -33,7 +33,7 @@ def initialize_db():
       "   channel INTEGER NOT NULL,"
       "   timestamp DATETIME NOT NULL,"
       "   value INTEGER UNSIGNED NOT NULL,"
-      "   FOREIGN KEY (device) REFERENCES devices (uuid));")
+      "   FOREIGN KEY (device) REFERENCES devices (uuid) ON UPDATE CASCADE);")
    cnx.close()
 
 def handle_device(uuid, ip):
