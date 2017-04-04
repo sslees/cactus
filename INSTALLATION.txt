@@ -56,6 +56,7 @@ sudo raspi-config
 				en_US.UTF-8
 		I2 Change Timezone: America: Los_Angeles
 		I4 Change Wi-fi Country: US United States
+	5 Interfacing Options: P4 SPI: Yes
    Finish: Yes (will reboot)
 
 ssh pi@cactus.local
@@ -75,3 +76,7 @@ pip3 install spidev
 
 sudo apt-get install -y git &&
 git clone https://github.com/sslees/cactus.git
+
+http://www.raspberrypi-spy.co.uk/2013/10/analogue-sensors-on-the-raspberry-pi-using-an-mcp3008/
+https://pinout.xyz/resources/raspberry-pi-pinout.png
+https://cdn-shop.adafruit.com/datasheets/MCP3008.pdf

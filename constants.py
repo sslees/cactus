@@ -6,7 +6,7 @@
 
 import struct
 
-UUID_FILE = '.uuid'
+UUID_FILE = 'cactus.config'
 PACKET_FORMAT = struct.Struct('16s I L I')
 HOST = 'cactus.sslees.com'
 PORT = 49151
@@ -15,5 +15,5 @@ LOG_IP = -1
 DB_DATABASE = "cactus"
 DB_USER = "cactus"
 DB_PASSWORD = "c@c7u$"
-# DRY_THRESHOLD = 306 #### not used yet
-# WATERED_THRESHOLD = 460 #### not used yet
+# DRY_THRESHOLD = 717 # less than 30% moisture #### not used yet
+# WATERED_THRESHOLD = 562 # more than 45%  moisture #### not used yet
