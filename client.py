@@ -17,12 +17,14 @@ import uuid
 from constants import *
 import measure
 
+UUID_LBL = 'uuid='
+
 channel = int(sys.argv[1])
-try: uuid = uuid.UUID(open(UUID_FILE).read()[5:])
+try: uuid = uuid.UUID(open(CONFIG_FILE).read()[len(UUID_LBL):-1])
 except:
    uuid = uuid.uuid4()
-   uuidFile = open(UUID_FILE, 'w')
-   uuidFile.write('uuid=' + str(uuid))
+   uuidFile = open(CONFIG_FILE, 'w')
+   uuidFile.write(UUID_LBL + str(uuid) + '\n')
    uuidFile.close()
 values = (uuid.bytes, LOG_IP, 0, 0)
 data = PACKET_FORMAT.pack(*values)
