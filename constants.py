@@ -7,7 +7,7 @@
 import struct
 
 UUID_FILE = 'cactus.config'
-PACKET_FORMAT = struct.Struct('16s i L I')
+PACKET_FORMAT = struct.Struct('! 16s i L I')
 HOST = 'cactus.sslees.com'
 PORT = 49151
 UPDATE_INTERVAL = 10 # seconds
