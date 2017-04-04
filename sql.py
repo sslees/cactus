@@ -22,9 +22,9 @@ def initialize_db():
    cursor.execute(
       "CREATE TABLE IF NOT EXISTS devices ("
       "   uuid CHAR(36) PRIMARY KEY,"
-      "   ip VARCHAR(39),"
-      "   user VARCHAR(254),"
-      "   nickname VARCHAR(64),"
+      "   ip VARCHAR(39) DEFAULT NULL,"
+      "   user VARCHAR(254) DEFAULT NULL,"
+      "   nickname VARCHAR(64) DEFAULT NULL,"
       "   FOREIGN KEY (user) REFERENCES users (email) ON UPDATE CASCADE);")
    cursor.execute(
       "CREATE TABLE IF NOT EXISTS measurements ("
@@ -40,7 +40,7 @@ def handle_device(uuid, ip):
    cnx = mysql.connector.connect(
       user=DB_USER, password=DB_PASSWORD, database=DB_DATABASE)
    cursor = cnx.cursor()
-   cursor.execute('INSERT INTO devices (uuid, ip) VALUES (%s %s) '
+   cursor.execute('INSERT INTO devices (uuid, ip) VALUES (%s, %s) '
       'ON DUPLICATE KEY UPDATE ip=VALUES(ip);', (uuid, ip))
    cnx.commit()
    cnx.close()

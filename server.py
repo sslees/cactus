@@ -27,7 +27,8 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
       value = values[3]
       print('device: ', device, ', channel: ', channel, ' (ip: ', ip,  ')\n'
          '   timestamp: ', timestamp, ', value: ', value, sep='')
-      if channel == -1: sql.handle_device(device, ip)
+      if channel == -1:
+         sql.handle_device(device, ip)
       else:
          sql.handle_measurement(device, channel, timestamp, value)
          # if (value < DRY_THRESHOLD &&
