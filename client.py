@@ -18,11 +18,11 @@ from constants import *
 import measure
 
 channel = int(sys.argv[1])
-try: uuid = uuid.UUID(open(UUID_FILE).read())
+try: uuid = uuid.UUID(open(UUID_FILE).read()[5:])
 except:
    uuid = uuid.uuid4()
    uuidFile = open(UUID_FILE, 'w')
-   uuidFile.write(str(uuid))
+   uuidFile.write('uuid=' + str(uuid))
    uuidFile.close()
 values = (uuid.bytes, LOG_IP, 0, 0)
 data = PACKET_FORMAT.pack(*values)
