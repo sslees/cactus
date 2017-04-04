@@ -29,7 +29,7 @@ data = PACKET_FORMAT.pack(*values)
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((HOST, PORT))
 s.sendall(data)
-s.shutdown(SHUT_RDWR)
+s.shutdown(socket.SHUT_RDWR)
 s.close()
 while True:
    values = (uuid.bytes, channel, int(time.time()), measure.measure(channel))
