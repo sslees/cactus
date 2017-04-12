@@ -5,6 +5,7 @@
 # Assignment: Final Project
 
 __pycache__/
+cactus.config
 public/index.html
 public/phase1/
 resources/
