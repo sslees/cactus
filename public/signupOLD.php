@@ -1,12 +1,3 @@
-<!-- File: signup.php
-Author: Matthew Lindly (mlindly)
-Date: 4/5/17
-Class: CPE 462-10 LAB
-Assignment: Senior Project
-References:
- https://www.w3schools.com/php/php_form_complete.asp
- http://php.net/manual/en/function.mail.php-->
-
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -15,8 +6,6 @@ References:
 </style>
 </head>
 <body>
-
-<h2>Register a Device</h2>
 
 <?php
 // define variables and set to empty values
@@ -78,7 +67,35 @@ function test_input($data) {
   $data = htmlspecialchars($data);
   return $data;
 }
+?>
 
+<h2>Sign Up!</h2>
+<p><span class="error">* required field.</span></p>
+<form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
+  First Name: <input type="text" name="firstName" value="<?php echo $firstName;?>">
+  <span class="error">* <?php echo $firstNameErr;?></span>
+  <br><br>
+  Last Name: <input type="text" name="lastName" value="<?php echo $lastName;?>">
+  <span class="error">* <?php echo $lastNameErr;?></span>
+  <br><br>
+  E-mail: <input type="text" name="email" value="<?php echo $email;?>">
+  <span class="error">* <?php echo $emailErr;?></span>
+  <br><br>
+  Password: <input type="password" name="newPassword" value="<?php echo $newPassword;?>">
+  <span class="error">* <?php echo $newPasswordErr;?></span>
+  <br><br>
+  Confirmed Password: <input type="password" name="confirmedPassword" value="<?php echo $confirmedPassword;?>">
+  <span class="error">* <?php echo $confirmedPasswordErr;?></span>
+  <br><br>
+  <input type="submit" name="submit" value="Submit">
+  <br><br>
+</form>
+
+Already have an account?
+<a href="signin.php">Sign in</a>
+<br><br>
+
+<?php
 // echo "<h2>Your Input:</h2>";
 // echo $firstName;
 // echo "<br>";
@@ -93,9 +110,9 @@ function test_input($data) {
 // echo "<br>";
 
 $servername = "localhost";
-$username = "cactus";
-$password = "c@c7u$";
-$dbname = "cactus";
+$username = "matt";
+$password = "vaporize-thank-dimple";
+$dbname = "testing_matt";
 
 if ($firstNameErr == "" && $lastNameErr == "" && $emailErr == "" && $newPasswordErr == "" && $confirmedPasswordErr == "" && $firstName != "" && $lastName != "" && $email != "" && $newPassword != "" && $confirmedPassword != "") {
   // Create connection
@@ -104,37 +121,24 @@ if ($firstNameErr == "" && $lastNameErr == "" && $emailErr == "" && $newPassword
   if ($conn->connect_error) {
       die("Connection failed: " . $conn->connect_error);
   }
-  $sql = "SELECT * FROM users WHERE email = '$email'";
+  $sql = "SELECT * FROM Users WHERE email = '$email'";
   $result = $conn->query($sql);
 
   if ($result->num_rows == 0) {
-    $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
-    $sql = "INSERT INTO users (email, first_name, last_name, password_hash)
-    VALUES ('$email', '$firstName', '$lastName', '$hashedPassword')";
+    $sql = "INSERT INTO Users (firstName, lastName, email, password)
+    VALUES ('$firstName', '$lastName', '$email', '$newPassword')";
 
     if ($conn->query($sql) === TRUE) {
-        // // the message
-        // $msg = "Welcome to SmartGarden, " . $firstName . "!\n";
-        // Message
-        $message = "
-        <html>
-        <body>
-          <h1>Welcome to SmartGarden, " . $firstName . "!</h1>
-        </body>
-        </html>
-        ";
+        // the message
+        $msg = "Welcome to SmartGarden, " . $firstName . "!\n";
 
-        // To send HTML mail, the Content-type header must be set
-        $headers[] = 'MIME-Version: 1.0';
-        $headers[] = 'Content-type: text/html; charset=iso-8859-1';
-
-        // Additional headers
-        $headers[] = 'From: SmartGarden <noreply@SmartGarden.com>';
+        // use wordwrap() if lines are longer than 70 characters
+        $msg = wordwrap($msg,70);
 
         // send email
-        mail($email,"Welcome to SmartGarden!", $message, implode("\r\n", $headers));
-        // echo "<br>";
-        // echo "Your password is: " . $row["password_hash"]. "<br>" ;
+        mail($email,"Welcome to SmartGarden!",$msg);
+        echo "<br>";
+        // echo "Your password is: " . $row["password"]. "<br>" ;
         echo "New user email sent successfully";
         // echo "<br>";
         // echo "New user created successfully";
@@ -145,12 +149,12 @@ if ($firstNameErr == "" && $lastNameErr == "" && $emailErr == "" && $newPassword
   else {
     while($row = $result->fetch_assoc()) {
       if ($row["email"] == $email) {
-        // echo "<br>";
+        echo "<br>";
         echo "Email address already in use";
         // echo "<br>";
         // echo "Here's your info:";
         // echo "<br>";
-        // echo "id: " . $row["id"]. " - Name: " . $row["first_name"]. " " . $row["last_name"]. "<br>";
+        // echo "id: " . $row["id"]. " - Name: " . $row["firstName"]. " " . $row["lastName"]. "<br>";
       }
     }
   }

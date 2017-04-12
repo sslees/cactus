@@ -84,3 +84,11 @@ git clone https://github.com/sslees/cactus.git
 http://www.raspberrypi-spy.co.uk/2013/10/analogue-sensors-on-the-raspberry-pi-using-an-mcp3008/
 https://pinout.xyz/resources/raspberry-pi-pinout.png
 https://cdn-shop.adafruit.com/datasheets/MCP3008.pdf
+
+https://www.raspberrypi.org/documentation/linux/usage/rc-local.md
+add
+python3 /home/pi/cactus/client.py &
+to
+sudo nano /etc/rc.local
+before
+exit 0

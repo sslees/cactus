@@ -1,11 +1,3 @@
-<!-- File: signin.php
-Author: Matthew Lindly (mlindly)
-Date: 4/5/17
-Class: CPE 462-10 LAB
-Assignment: Senior Project
-References:
- https://www.w3schools.com/php/php_form_complete.asp -->
-
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -14,8 +6,6 @@ References:
 </style>
 </head>
 <body>
-
-<h2>Dashboard</h2>
 
 <?php
 // define variables and set to empty values
@@ -46,7 +36,27 @@ function test_input($data) {
   $data = htmlspecialchars($data);
   return $data;
 }
+?>
 
+<h2>Sign In!</h2>
+<p><span class="error">* required field.</span></p>
+<form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
+  E-mail: <input type="text" name="email" value="<?php echo $email;?>">
+  <span class="error">* <?php echo $emailErr;?></span>
+  <br><br>
+  Password: <input type="password" name="newPassword" value="<?php echo $newPassword;?>">
+  <span class="error">* <?php echo $newPasswordErr;?></span>
+  <a href="resetpassword.php">Forgot Password</a>
+  <br><br>
+  <input type="submit" name="submit" value="Submit">
+  <br><br>
+</form>
+
+Don’t have an account?
+<a href="signup.php">Sign up</a>
+<br><br>
+
+<?php
 // echo "<h2>Your Input:</h2>";
 // echo "Email input: " . $email;
 // echo "<br>";
@@ -54,9 +64,9 @@ function test_input($data) {
 // echo "<br>";
 
 $servername = "localhost";
-$username = "cactus";
-$password = "c@c7u$";
-$dbname = "cactus";
+$username = "matt";
+$password = "vaporize-thank-dimple";
+$dbname = "testing_matt";
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -64,20 +74,20 @@ $conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
-$sql = "SELECT * FROM users WHERE email = '$email'";
+$sql = "SELECT * FROM Users WHERE email = '$email'";
 $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
     // output data of each row
     while($row = $result->fetch_assoc()) {
-      if (password_verify($newPassword, $row["password_hash"])) {
-        echo "Welcome " . $row["first_name"]. " " . $row["last_name"]. "!<br>" ;
+      if ($row["password"] == $newPassword) {
+        echo "Welcome " . $row["firstName"]. " " . $row["lastName"]. "!<br>" ;
         // echo "<br>";
         // echo "Here's your info:";
         // echo "<br>";
-        // echo "id: " . $row["id"]. " - Name: " . $row["first_name"]. " " . $row["last_name"]. "<br>";
+        // echo "id: " . $row["id"]. " - Name: " . $row["firstName"]. " " . $row["lastName"]. "<br>";
       }
-      if (!password_verify($newPassword, $row["password_hash"])) {
+      else {
         echo "<br>";
         echo "Incorrect Password";
       }

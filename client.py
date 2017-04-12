@@ -19,7 +19,6 @@ import measure
 
 UUID_LBL = 'uuid='
 
-channel = int(sys.argv[1])
 try: uuid = uuid.UUID(open(CONFIG_FILE).read()[len(UUID_LBL):-1])
 except:
    uuid = uuid.uuid4()
@@ -34,11 +33,12 @@ s.sendall(data)
 s.shutdown(socket.SHUT_RDWR)
 s.close()
 while True:
-   values = (uuid.bytes, channel, int(time.time()), measure.measure(channel))
-   data = PACKET_FORMAT.pack(*values)
-   s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-   s.connect((HOST, PORT))
-   s.sendall(data)
-   s.shutdown(socket.SHUT_RDWR)
-   s.close()
+   for channel in range(8):
+      values = (uuid.bytes, channel, int(time.time()), measure.measure(channel))
+      data = PACKET_FORMAT.pack(*values)
+      s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+      s.connect((HOST, PORT))
+      s.sendall(data)
+      s.shutdown(socket.SHUT_RDWR)
+      s.close()
    time.sleep(UPDATE_INTERVAL)

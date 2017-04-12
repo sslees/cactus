@@ -1,3 +1,11 @@
+<!-- File: registerdevice.php
+Author: Matthew Lindly (mlindly)
+Date: 4/5/17
+Class: CPE 462-10 LAB
+Assignment: Senior Project
+References:
+ https://www.w3schools.com/php/php_form_complete.asp -->
+
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -9,15 +17,15 @@
 
 <?php
 // define variables and set to empty values
-$macErr = $nameErr = $emailErr = $passwordErr = "";
-$mac = $name = $email = $newPassword = "";
+$uuidErr = $nameErr = $emailErr = $passwordErr = "";
+$uuid = $name = $email = $newPassword = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  if (empty($_POST["mac"])) {
-    $macErr = "MAC Address is required";
+  if (empty($_POST["uuid"])) {
+    $uuidErr = "UUID is required";
   } else {
-    $mac = test_input($_POST["mac"]);
-    // check if mac is well-formed
+    $uuid = test_input($_POST["uuid"]);
+    // check if uuid is well-formed
   }
   if (empty($_POST["name"])) {
     $nameErr = "Device Name is required";
@@ -60,9 +68,9 @@ function test_input($data) {
 // echo "<br>";
 
 $servername = "localhost";
-$username = "matt";
-$password = "vaporize-thank-dimple";
-$dbname = "testing_matt";
+$username = "cactus";
+$password = "c@c7u$";
+$dbname = "cactus";
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -72,7 +80,7 @@ if ($conn->connect_error) {
 }
 $ip = $_SERVER['REMOTE_ADDR'];
 // echo $ip;
-$sql = "SELECT * FROM Devices WHERE initialIP = '$ip'";
+$sql = "SELECT * FROM devices WHERE ip = '$ip'";
 // echo $sql;
 $result = $conn->query($sql);
 // echo $result;
@@ -81,11 +89,11 @@ if ($result->num_rows > 0) {
     // output data of each row
   echo "New devices on your network:<br>";
   while($row = $result->fetch_assoc()) {
-    echo $row["mac"]. "<br>";
+    echo $row["uuid"]. "<br>";
     // echo "<br>";
     // echo "Here's your info:";
     // echo "<br>";
-    // echo "id: " . $row["id"]. " - Name: " . $row["firstName"]. " " . $row["lastName"]. "<br>";
+    // echo "id: " . $row["id"]. " - Name: " . $row["first_name"]. " " . $row["last_name"]. "<br>";
   }
 } else {
     echo "<br>";
@@ -96,8 +104,8 @@ $conn->close();
 
 <p><span class="error">* required field.</span></p>
 <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
-  MAC Address: <input type="text" name="mac" value="<?php echo $mac;?>">
-  <span class="error">* <?php echo $macErr;?></span>
+  UUID: <input type="text" name="uuid" value="<?php echo $uuid;?>">
+  <span class="error">* <?php echo $uuidErr;?></span>
   <br><br>
   Device Name: <input type="text" name="name" value="<?php echo $name;?>">
   <span class="error">* <?php echo $nameErr;?></span>
@@ -125,9 +133,9 @@ Don’t have an account?
 // echo "<br>";
 
 $servername = "localhost";
-$username = "matt";
-$password = "vaporize-thank-dimple";
-$dbname = "testing_matt";
+$username = "cactus";
+$password = "c@c7u$";
+$dbname = "cactus";
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -135,21 +143,21 @@ $conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
-$sql = "SELECT * FROM Users WHERE email = '$email'";
+$sql = "SELECT * FROM users WHERE email = '$email'";
 $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
     // output data of each row
     while($row = $result->fetch_assoc()) {
-      if ($row["password"] == $newPassword) {
-        $sql = "UPDATE Devices
-         SET initialIP = null, userEmail = '$email', name = '$name'
-         WHERE mac = '$mac'";
+      if ($row["password_hash"] == $newPassword) {
+        $sql = "UPDATE devices
+         SET ip = null, user = '$email', nickname = '$name'
+         WHERE uuid = '$uuid'";
         // echo $sql;
 
         if ($conn->query($sql) === TRUE) {
             echo "<br>";
-            // echo "Your password is: " . $row["password"]. "<br>" ;
+            // echo "Your password is: " . $row["password_hash"]. "<br>" ;
             echo "New device registered successfully";
             // echo "<br>";
             // echo "New user created successfully";
@@ -157,7 +165,7 @@ if ($result->num_rows > 0) {
         // echo "<br>";
         // echo "Here's your info:";
         // echo "<br>";
-        // echo "id: " . $row["id"]. " - Name: " . $row["firstName"]. " " . $row["lastName"]. "<br>";
+        // echo "id: " . $row["id"]. " - Name: " . $row["first_name"]. " " . $row["last_name"]. "<br>";
       }
       else {
         echo "<br>";

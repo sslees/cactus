@@ -1,3 +1,12 @@
+<!-- File: resetpassword.php
+Author: Matthew Lindly (mlindly)
+Date: 4/5/17
+Class: CPE 462-10 LAB
+Assignment: Senior Project
+References:
+ https://www.w3schools.com/php/php_form_complete.asp
+ https://hugh.blog/2012/04/23/simple-way-to-generate-a-random-password-in-php/-->
+
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -7,7 +16,15 @@
 </head>
 <body>
 
+<h2>Check Email</h2>
+
 <?php
+function random_password( $length = 8 ) {
+  $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  $password = substr( str_shuffle( $chars ), 0, $length );
+  return $password;
+}
+
 // define variables and set to empty values
 $emailErr = "";
 $email = "";
@@ -30,25 +47,7 @@ function test_input($data) {
   $data = htmlspecialchars($data);
   return $data;
 }
-?>
 
-<h2>Reset Password</h2>
-<p><span class="error">* required field.</span></p>
-<form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
-  Enter the email address you used to register, and we'll send you your password.
-  <br><br>
-  E-mail: <input type="text" name="email" value="<?php echo $email;?>">
-  <span class="error">* <?php echo $emailErr;?></span>
-  <br><br>
-  <input type="submit" name="submit" value="Send Password">
-  <br><br>
-</form>
-
-Don’t have an account?
-<a href="signin.php">Back to sign in</a>
-<br><br>
-
-<?php
 // echo "<h2>Your Input:</h2>";
 // echo "Email input: " . $email;
 // echo "<br>";
@@ -56,9 +55,9 @@ Don’t have an account?
 // echo "<br>";
 
 $servername = "localhost";
-$username = "matt";
-$password = "vaporize-thank-dimple";
-$dbname = "testing_matt";
+$username = "cactus";
+$password = "c@c7u$";
+$dbname = "cactus";
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -66,27 +65,50 @@ $conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
-$sql = "SELECT * FROM Users WHERE email = '$email'";
+$sql = "SELECT * FROM users WHERE email = '$email'";
 $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
     // output data of each row
     while($row = $result->fetch_assoc()) {
-        // the message
-        $msg = "The password for " . $row["email"] . " is: " . $row["password"] . "\n";
+        $temporaryPassword = random_password(8);
+        $hashedPassword = password_hash($temporaryPassword, PASSWORD_DEFAULT);
+        $sql = "UPDATE users
+         SET password_hash = '$hashedPassword'
+         WHERE email = '$email'";
+        // echo $sql;
 
-        // use wordwrap() if lines are longer than 70 characters
-        $msg = wordwrap($msg,70);
+        if ($conn->query($sql) === TRUE) {
+          // // the message
+          // $msg = "The temporary password for " . $row["email"] . " is: " . $temporaryPassword . "\n";
+          // Message
+          $message = "
+          <html>
+          <body>
+            <h1>SmartGarden Temporary Password</h1>
+            Hi " . $row["first_name"] . ",<br />
+            Your temporary password is: " . $temporaryPassword . "
+          </body>
+          </html>
+          ";
 
-        // send email
-        mail($row["email"],"SmartGarden Password Reset",$msg);
-        echo "<br>";
-        // echo "Your password is: " . $row["password"]. "<br>" ;
-        echo "Password reset email sent successfully";
-        // echo "<br>";
-        // echo "Here's your info:";
-        // echo "<br>";
-        // echo "id: " . $row["id"]. " - Name: " . $row["firstName"]. " " . $row["lastName"]. "<br>";
+          // To send HTML mail, the Content-type header must be set
+          $headers[] = 'MIME-Version: 1.0';
+          $headers[] = 'Content-type: text/html; charset=iso-8859-1';
+
+          // Additional headers
+          $headers[] = 'From: SmartGarden <noreply@SmartGarden.com>';
+
+          // send email
+          mail($row["email"],"SmartGarden Password Reset",$message, implode("\r\n", $headers));
+          echo "<br>";
+          // echo "Your password is: " . $row["password_hash"]. "<br>" ;
+          echo "Password reset email sent successfully";
+          // echo "<br>";
+          // echo "Here's your info:";
+          // echo "<br>";
+          // echo "id: " . $row["id"]. " - Name: " . $row["first_name"]. " " . $row["last_name"]. "<br>";
+        }
     }
 } elseif ($email != "") {
     echo "<br>";
