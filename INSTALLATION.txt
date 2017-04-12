@@ -18,7 +18,10 @@ sudo pip-3.5 install requests
 
 #### FIXME TODO ...
 
+OTHERS STUFF
 
+check database size:
+SELECT table_schema "Database", SUM(data_length + index_length) / 1024 / 1024 "Size (MB)" FROM information_schema.TABLES GROUP BY table_schema;
 
 
 
