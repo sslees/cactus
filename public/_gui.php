@@ -14,7 +14,7 @@ References:
 
 <html>
    <head>
-      <meta http-equiv="refresh" content="5">
+      <!-- <meta http-equiv="refresh" content="5"> -->
 
       <script type="text/javascript"
        src="https://www.gstatic.com/charts/loader.js"></script>
@@ -28,12 +28,12 @@ References:
          function drawMinimumChart() {
             var data = google.visualization.arrayToDataTable(
                [['Label', 'Value'], ['', <?php
-                  $db = new SQLite3('../data.sqlite3');
+                  $db = new PDO("mysql:host=localhost;dbname=cactus", "cactus",
+                   "c@c7u$");
 
-                  echo $db->query('SELECT measurement FROM stats WHERE ' .
-                   'parameter = \'minimum\';')->fetchArray()[0];
+                  echo round($db->query('select 1023 - max(value) from measurements where timestamp >= DATE_SUB(UTC_TIMESTAMP, INTERVAL 1 DAY) and device = \'' . $_GET['device'] . '\' and channel = ' . $_GET['channel'] . ';')->fetch()[0] / 10.23, 2);
 
-                  $db->close();
+                  $db = null;
                ?>]]
             );
             var options = {
@@ -52,12 +52,12 @@ References:
          function drawCurrentChart() {
             var data = google.visualization.arrayToDataTable(
                [['Label', 'Value'], ['', <?php
-                  $db = new SQLite3('../data.sqlite3');
+                  $db = new PDO("mysql:host=localhost;dbname=cactus", "cactus",
+                   "c@c7u$");
 
-                  echo $db->query('SELECT measurement FROM stats WHERE ' .
-                   'parameter = \'current\';')->fetchArray()[0];
+                  echo round($db->query('select 1023 - value from measurements where timestamp = (select max(timestamp) from measurements where device = \'' . $_GET['device'] . '\' and channel = ' . $_GET['channel'] . ') and device = \'' . $_GET['device'] . '\' and channel = ' . $_GET['channel'] . ';')->fetch()[0] / 10.23, 2);
 
-                  $db->close();
+                  $db = null;
                ?>]]
             );
             var options = {
@@ -76,12 +76,12 @@ References:
          function drawMaximumChart() {
             var data = google.visualization.arrayToDataTable(
                [['Label', 'Value'], ['', <?php
-                  $db = new SQLite3('../data.sqlite3');
+                  $db = new PDO("mysql:host=localhost;dbname=cactus", "cactus",
+                   "c@c7u$");
 
-                  echo $db->query('SELECT measurement FROM stats WHERE ' .
-                   'parameter = \'maximum\';')->fetchArray()[0];
+                  echo round($db->query('select 1023 - min(value) from measurements where timestamp >= DATE_SUB(UTC_TIMESTAMP, INTERVAL 1 DAY) and device = \'' . $_GET['device'] . '\' and channel = ' . $_GET['channel'] . ';')->fetch()[0] / 10.23, 2);
 
-                  $db->close();
+                  $db = null;
                ?>]]
             );
             var options = {
@@ -101,42 +101,29 @@ References:
             var data = new google.visualization.arrayToDataTable([
                ['Time', '% Moisture'],
                <?php
-                  $db = new SQLite3('../data.sqlite3');
+                  $db = new PDO("mysql:host=localhost;dbname=cactus", "cactus",
+                   "c@c7u$");
 
                   if (isset($_POST['scale']) and
                    $_POST['scale'] == 'year') {
-                     $results = $db->query('SELECT * FROM measurements WHERE ' .
-                      'timestamp > strftime(\'%s\',\'now\',\'-1 year\') AND ' .
-                      'timestamp <= strftime(\'%s\', \'now\') AND ' .
-                      'rowid % 525 = 0;');
+                     $results = $db->query('select YEAR(timestamp), MONTH(timestamp) - 1, DAY(timestamp), HOUR(timestamp), MINUTE(timestamp), SECOND(timestamp), 1023 - value from measurements where device = \'' . $_GET['device'] . '\' and channel = ' . $_GET['channel'] . ' and timestamp >= DATE_SUB(UTC_TIMESTAMP, INTERVAL 1 YEAR);');
                   } elseif (isset($_POST['scale']) and
                    $_POST['scale'] == 'month') {
-                     $results = $db->query('SELECT * FROM measurements WHERE ' .
-                      'timestamp > strftime(\'%s\',\'now\',\'-1 month\') AND ' .
-                      'timestamp <= strftime(\'%s\', \'now\') AND ' .
-                      'rowid % 160 = 0;');
+                     $results = $db->query('select YEAR(timestamp), MONTH(timestamp) - 1, DAY(timestamp), HOUR(timestamp), MINUTE(timestamp), SECOND(timestamp), 1023 - value from measurements where device = \'' . $_GET['device'] . '\' and channel = ' . $_GET['channel'] . ' and timestamp >= DATE_SUB(UTC_TIMESTAMP, INTERVAL 1 MONTH);');
                   } elseif (isset($_POST['scale']) and
                    $_POST['scale'] == 'week') {
-                     $results = $db->query('SELECT * FROM measurements WHERE ' .
-                      'timestamp > strftime(\'%s\',\'now\',\'-7 day\') AND ' .
-                      'timestamp <= strftime(\'%s\', \'now\') AND ' .
-                      'rowid % 40 = 0;');
+                     $results = $db->query('select YEAR(timestamp), MONTH(timestamp) - 1, DAY(timestamp), HOUR(timestamp), MINUTE(timestamp), SECOND(timestamp), 1023 - value from measurements where device = \'' . $_GET['device'] . '\' and channel = ' . $_GET['channel'] . ' and timestamp >= DATE_SUB(UTC_TIMESTAMP, INTERVAL 1 WEEK);');
                   } elseif (isset($_POST['scale']) and
                    $_POST['scale'] == 'day') {
-                     $results = $db->query('SELECT * FROM measurements WHERE ' .
-                      'timestamp > strftime(\'%s\',\'now\',\'-1 day\') AND ' .
-                      'timestamp <= strftime(\'%s\', \'now\') AND ' .
-                      'rowid % 5 = 0;');
+                     $results = $db->query('select YEAR(timestamp), MONTH(timestamp) - 1, DAY(timestamp), HOUR(timestamp), MINUTE(timestamp), SECOND(timestamp), 1023 - value from measurements where device = \'' . $_GET['device'] . '\' and channel = ' . $_GET['channel'] . ' and timestamp >= DATE_SUB(UTC_TIMESTAMP, INTERVAL 1 DAY);');
                   } else {
-                     $results = $db->query('SELECT * FROM measurements WHERE ' .
-                      'timestamp > strftime(\'%s\',\'now\',\'-1 hour\') AND ' .
-                      'timestamp <= strftime(\'%s\', \'now\');');
+                     $results = $db->query('select YEAR(timestamp), MONTH(timestamp) - 1, DAY(timestamp), HOUR(timestamp), MINUTE(timestamp), SECOND(timestamp), 1023 - value from measurements where device = \'' . $_GET['device'] . '\' and channel = ' . $_GET['channel'] . ' and timestamp >= DATE_SUB(UTC_TIMESTAMP, INTERVAL 1 HOUR);');
                   }
 
-                  while ($row = $results->fetchArray())
-                     echo '[new Date(', $row[0] * 1000, '), ', $row[1], '],';
+                  while ($row = $results->fetch())
+                     echo '[new Date(Date.UTC(', $row[0], ', ', $row[1], ', ', $row[2], ', ', $row[3], ', ', $row[4], ', ', $row[5], ')), ', round($row[6] / 10.23, 2), '],';
 
-                  $db->close();
+                  $db = null;
                ?>
             ]);
             var options = {

@@ -86,6 +86,24 @@ if ($result->num_rows > 0) {
     echo "<br>";
     echo "Email address not found";
 }
+
+$sql = "SELECT * FROM devices WHERE user = '$email'";
+$result = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+  // echo "here". $result->num_rows;
+    // output data of each row
+    while($row = $result->fetch_assoc()) {
+      echo "Device nickname: " . $row["nickname"]. "<br>" ;
+      // echo "<br>";
+      // echo "Here's your info:";
+      // echo "<br>";
+      // echo "id: " . $row["id"]. " - Name: " . $row["first_name"]. " " . $row["last_name"]. "<br>";
+    }
+} else {
+    echo "<br>";
+    echo "No devices found";
+}
 $conn->close();
 ?>
 
