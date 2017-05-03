@@ -106,9 +106,6 @@ References:
 
                   $db->exec('set @a = 0;');
                   if (isset($_POST['scale']) and
-                   $_POST['scale'] == 'year') {
-                     $results = $db->query('select year(timestamp), month(timestamp) - 1, day(timestamp), HOUR(timestamp), minute(timestamp), second(timestamp), 1023 - value from measurements where (@a := @a + 1) % 8766 = 0 and device = \'' . $_GET['device'] . '\' and channel = ' . $_GET['channel'] . ' and timestamp >= date_sub(utc_timestamp, interval 1 year);');
-                  } elseif (isset($_POST['scale']) and
                    $_POST['scale'] == 'month') {
                      $results = $db->query('select year(timestamp), month(timestamp) - 1, day(timestamp), HOUR(timestamp), minute(timestamp), second(timestamp), 1023 - value from measurements where (@a := @a + 1) % 730 = 0 and device = \'' . $_GET['device'] . '\' and channel = ' . $_GET['channel'] . ' and timestamp >= date_sub(utc_timestamp, interval 1 month);');
                   } elseif (isset($_POST['scale']) and
@@ -186,9 +183,6 @@ References:
                </td>
                <td style="text-align: center">
                   <button name="scale" value="month">Past Month</button>
-               </td>
-               <td style="text-align: center">
-                  <button name="scale" value="year">Past Year</button>
                </td>
             </tr>
          </table>
