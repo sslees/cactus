@@ -71,7 +71,7 @@ if ($result->num_rows > 0) {
     // output data of each row
     while($row = $result->fetch_assoc()) {
       if (password_verify($newPassword, $row["password_hash"])) {
-        echo "Welcome " . $row["first_name"]. " " . $row["last_name"]. "!<br>" ;
+        echo "Welcome " . $row["first_name"]. " " . $row["last_name"]. "!<br><br>" ;
         // echo "<br>";
         // echo "Here's your info:";
         // echo "<br>";
@@ -94,7 +94,16 @@ if ($result->num_rows > 0) {
   // echo "here". $result->num_rows;
     // output data of each row
     while($row = $result->fetch_assoc()) {
-      echo "Device nickname: " . $row["nickname"]. "<br>" ;
+      echo $row["nickname"]. "<br>";
+      for ($i=0; $i < 8; $i++) {
+        $sqlCur = "select 1023 - value from measurements where timestamp = (select max(timestamp) from measurements where device = '" . $row["uuid"] . "' and channel = " . $i . ") and device = '" . $row["uuid"] . "' and channel = " . $i . ";";
+        $resultCur = $conn->query($sqlCur);
+        $rowCur = $resultCur->fetch_assoc();
+        echo $sqlCur;
+        echo "<a href=gui.php?device=". $row["uuid"]. "&channel=". $i. ">Sensor ". ($i+1). "</a><br>";
+        echo "Current: ". round($rowCur["1023 - value"] / 10.23, 2). "<br>";
+      }
+      echo "<br>";
       // echo "<br>";
       // echo "Here's your info:";
       // echo "<br>";

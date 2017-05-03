@@ -31,7 +31,7 @@ References:
                   $db = new PDO("mysql:host=localhost;dbname=cactus", "cactus",
                    "c@c7u$");
 
-                  echo round($db->query('select 1023 - max(value) from measurements where timestamp >= DATE_SUB(UTC_TIMESTAMP, INTERVAL 1 DAY) and device = \'' . $_GET['device'] . '\' and channel = ' . $_GET['channel'] . ';')->fetch()[0] / 10.23, 2);
+                  echo round($db->query('select 1023 - max(value) from measurements where timestamp >= date_sub(utc_timestamp, interval 1 day) and device = \'' . $_GET['device'] . '\' and channel = ' . $_GET['channel'] . ';')->fetch()[0] / 10.23, 2);
 
                   $db = null;
                ?>]]
@@ -79,7 +79,7 @@ References:
                   $db = new PDO("mysql:host=localhost;dbname=cactus", "cactus",
                    "c@c7u$");
 
-                  echo round($db->query('select 1023 - min(value) from measurements where timestamp >= DATE_SUB(UTC_TIMESTAMP, INTERVAL 1 DAY) and device = \'' . $_GET['device'] . '\' and channel = ' . $_GET['channel'] . ';')->fetch()[0] / 10.23, 2);
+                  echo round($db->query('select 1023 - min(value) from measurements where timestamp >= date_sub(utc_timestamp, interval 1 day) and device = \'' . $_GET['device'] . '\' and channel = ' . $_GET['channel'] . ';')->fetch()[0] / 10.23, 2);
 
                   $db = null;
                ?>]]
@@ -104,20 +104,21 @@ References:
                   $db = new PDO("mysql:host=localhost;dbname=cactus", "cactus",
                    "c@c7u$");
 
+                  $db->exec('set @a = 0;');
                   if (isset($_POST['scale']) and
                    $_POST['scale'] == 'year') {
-                     $results = $db->query('select YEAR(timestamp), MONTH(timestamp) - 1, DAY(timestamp), HOUR(timestamp), MINUTE(timestamp), SECOND(timestamp), 1023 - value from measurements where device = \'' . $_GET['device'] . '\' and channel = ' . $_GET['channel'] . ' and timestamp >= DATE_SUB(UTC_TIMESTAMP, INTERVAL 1 YEAR);');
+                     $results = $db->query('select year(timestamp), month(timestamp) - 1, day(timestamp), HOUR(timestamp), minute(timestamp), second(timestamp), 1023 - value from measurements where (@a := @a + 1) % 8766 = 0 and device = \'' . $_GET['device'] . '\' and channel = ' . $_GET['channel'] . ' and timestamp >= date_sub(utc_timestamp, interval 1 year);');
                   } elseif (isset($_POST['scale']) and
                    $_POST['scale'] == 'month') {
-                     $results = $db->query('select YEAR(timestamp), MONTH(timestamp) - 1, DAY(timestamp), HOUR(timestamp), MINUTE(timestamp), SECOND(timestamp), 1023 - value from measurements where device = \'' . $_GET['device'] . '\' and channel = ' . $_GET['channel'] . ' and timestamp >= DATE_SUB(UTC_TIMESTAMP, INTERVAL 1 MONTH);');
+                     $results = $db->query('select year(timestamp), month(timestamp) - 1, day(timestamp), HOUR(timestamp), minute(timestamp), second(timestamp), 1023 - value from measurements where (@a := @a + 1) % 730 = 0 and device = \'' . $_GET['device'] . '\' and channel = ' . $_GET['channel'] . ' and timestamp >= date_sub(utc_timestamp, interval 1 month);');
                   } elseif (isset($_POST['scale']) and
                    $_POST['scale'] == 'week') {
-                     $results = $db->query('select YEAR(timestamp), MONTH(timestamp) - 1, DAY(timestamp), HOUR(timestamp), MINUTE(timestamp), SECOND(timestamp), 1023 - value from measurements where device = \'' . $_GET['device'] . '\' and channel = ' . $_GET['channel'] . ' and timestamp >= DATE_SUB(UTC_TIMESTAMP, INTERVAL 1 WEEK);');
+                     $results = $db->query('select year(timestamp), month(timestamp) - 1, day(timestamp), HOUR(timestamp), minute(timestamp), second(timestamp), 1023 - value from measurements where (@a := @a + 1) % 168 = 0 and device = \'' . $_GET['device'] . '\' and channel = ' . $_GET['channel'] . ' and timestamp >= date_sub(utc_timestamp, interval 1 week);');
                   } elseif (isset($_POST['scale']) and
                    $_POST['scale'] == 'day') {
-                     $results = $db->query('select YEAR(timestamp), MONTH(timestamp) - 1, DAY(timestamp), HOUR(timestamp), MINUTE(timestamp), SECOND(timestamp), 1023 - value from measurements where device = \'' . $_GET['device'] . '\' and channel = ' . $_GET['channel'] . ' and timestamp >= DATE_SUB(UTC_TIMESTAMP, INTERVAL 1 DAY);');
+                     $results = $db->query('select year(timestamp), month(timestamp) - 1, day(timestamp), HOUR(timestamp), minute(timestamp), second(timestamp), 1023 - value from measurements where (@a := @a + 1) % 24 = 0 and device = \'' . $_GET['device'] . '\' and channel = ' . $_GET['channel'] . ' and timestamp >= date_sub(utc_timestamp, interval 1 day);');
                   } else {
-                     $results = $db->query('select YEAR(timestamp), MONTH(timestamp) - 1, DAY(timestamp), HOUR(timestamp), MINUTE(timestamp), SECOND(timestamp), 1023 - value from measurements where device = \'' . $_GET['device'] . '\' and channel = ' . $_GET['channel'] . ' and timestamp >= DATE_SUB(UTC_TIMESTAMP, INTERVAL 1 HOUR);');
+                     $results = $db->query('select year(timestamp), month(timestamp) - 1, day(timestamp), HOUR(timestamp), minute(timestamp), second(timestamp), 1023 - value from measurements where device = \'' . $_GET['device'] . '\' and channel = ' . $_GET['channel'] . ' and timestamp >= date_sub(utc_timestamp, interval 1 hour);');
                   }
 
                   while ($row = $results->fetch())
