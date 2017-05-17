@@ -6,12 +6,10 @@
 
 import requests
 
-def notify_dry(): #### DISABLED
-   # requests.post(
-   #  'https://maker.ifttt.com/trigger/dry/with/key/bLnBZe0-3m5ULHo5F8Hnbp')
-   print('dry notifications disabled...')
+def notify_dry():
+   requests.post(
+    'https://maker.ifttt.com/trigger/dry/with/key/qGhtdMabf2zxRsrpVc2P6')
 
-def notify_watered(): #### DISABLED
-   # requests.post(
-   #  'https://maker.ifttt.com/trigger/watered/with/key/bLnBZe0-3m5ULHo5F8Hnbp')
-   print('watered notifications disabled...')
+def notify_watered():
+   requests.post(
+    'https://maker.ifttt.com/trigger/watered/with/key/qGhtdMabf2zxRsrpVc2P6')

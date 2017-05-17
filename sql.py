@@ -33,6 +33,7 @@ def initialize_db():
       "   channel INTEGER NOT NULL,"
       "   timestamp DATETIME NOT NULL,"
       "   value INTEGER UNSIGNED NOT NULL,"
+      "   INDEX ind_measurements_timestamp (device, channel, timestamp),"
       "   FOREIGN KEY (device) REFERENCES devices (uuid) ON UPDATE CASCADE);")
    cnx.close()
 

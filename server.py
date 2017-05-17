@@ -28,19 +28,7 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
       print('device: ', device, ', channel: ', channel, ' (ip: ', ip,  ')\n'
          '   timestamp: ', timestamp, ', value: ', value, sep='')
       if channel == -1: sql.handle_device(device, ip)
-      else:
-         sql.handle_measurement(device, channel, timestamp, value)
-         # if (value < DRY_THRESHOLD &&
-         #  (!dry || (dry && time(NULL) - lastNotified > NOTIFICATOIN_INTERVAL_S))) {
-         #    dry = 1;
-         #    lastNotified = timestamp;
-         #    notify_dry();
-         # } else if (value > WATERED_THRESHOLD &&
-         #  (dry || (!dry && time(NULL) - lastNotified > NOTIFICATOIN_INTERVAL_S))) {
-         #    dry = 0;
-         #    lastNotified = timestamp;
-         #    notify_watered();
-         # } ####
+      else: sql.handle_measurement(device, channel, timestamp, value)
 
 sql.initialize_db()
 socketserver.TCPServer.allow_reuse_address = True

@@ -16,7 +16,7 @@ References:
 </head>
 <body>
 
-<h2>Register a Device</h2>
+<h2>Sign Up Landing</h2>
 
 <?php
 // define variables and set to empty values

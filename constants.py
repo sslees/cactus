@@ -15,5 +15,5 @@ LOG_IP = -1
 DB_DATABASE = "cactus"
 DB_USER = "cactus"
 DB_PASSWORD = "c@c7u$"
-# DRY_THRESHOLD = 717 # less than 30% moisture #### not used yet
-# WATERED_THRESHOLD = 562 # more than 45%  moisture #### not used yet
+DRY_THRESHOLD = 717 # less than 30% moisture
+WATERED_THRESHOLD = 562 # more than 45%  moisture
