@@ -29,7 +29,7 @@ except:
    uuidFile.write(UUID_LBL + str(uuid) + '\n')
    uuidFile.close()
 GPIO.setmode(GPIO.BOARD)
-GPIO.setup(PUMP_PIN, GPIO.OUT)
+for pump_pin in PUMP_PINS: GPIO.setup(pump_pin, GPIO.OUT)
 values = (uuid.bytes, LOG_IP, 0, 0)
 data = PACKET_FORMAT.pack(*values)
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
