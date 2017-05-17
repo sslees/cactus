@@ -17,3 +17,4 @@ DB_USER = "cactus"
 DB_PASSWORD = "c@c7u$"
 DRY_THRESHOLD = 717 # less than 30% moisture
 WATERED_THRESHOLD = 562 # more than 45%  moisture
+PUMP_PINS = [11, 13, 15, 16, 18, 22, 36, 37] # channels 0 - 7

@@ -20,7 +20,6 @@ import measure
 import notifications
 
 UUID_LBL = 'uuid='
-PUMP_PINS = [11, 13, 15, 16, 18, 22, 36, 37]
 
 try: uuid = uuid.UUID(open(CONFIG_FILE).read()[len(UUID_LBL):-1])
 except:
@@ -38,7 +37,7 @@ s.sendall(data)
 s.shutdown(socket.SHUT_RDWR)
 s.close()
 while True:
-   measurements = []
+   measurements = [] * 8
    for channel in range(8):
       measurements[channel] = measure.measure(channel)
       values = (uuid.bytes, channel, int(time.time()), measurements[channel])
