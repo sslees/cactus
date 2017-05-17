@@ -80,6 +80,7 @@ ifconfig wlan0 | grep 'inet addr'
 
 sudo apt-get install -y python3 python3-pip
 pip3 install spidev
+sudo pip3 install RPi.GPIO
 
 sudo apt-get install -y git &&
 git clone https://github.com/sslees/cactus.git
