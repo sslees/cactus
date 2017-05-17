@@ -37,7 +37,7 @@ s.sendall(data)
 s.shutdown(socket.SHUT_RDWR)
 s.close()
 while True:
-   measurements = [] * 8
+   measurements = [None] * 8
    for channel in range(8):
       measurements[channel] = measure.measure(channel)
       values = (uuid.bytes, channel, int(time.time()), measurements[channel])
