@@ -1,4 +1,4 @@
-<!-- File: signin.php
+<!-- File: dashboard.php
 Author: Matthew Lindly (mlindly)
 Date: 4/5/17
 Class: CPE 462-10 LAB
@@ -13,6 +13,7 @@ References:
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="phase2/assets/css/main.css" />
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <style>
@@ -30,13 +31,16 @@ input[type=text], input[type=password] {
 
 /* Set a style for all buttons */
 button {
+    position: absolute;
+    right: 0px;
     background-color: #4CAF50;
     color: white;
-    padding: 14px 20px;
-    margin: 8px 0;
+    padding: 0 18px;
+    /*margin: 8px 0;*/
     border: none;
     cursor: pointer;
     width: 100%;
+    height: 44px;
 }
 
 button:hover {
@@ -57,12 +61,18 @@ button:hover {
 }
 
 .gotoresetpasswordbtn {
-    float:right;
-    width: auto;
+    /*float:right;*/
+/*    width: auto;
     padding: 10px 18px;
-    background-color: #ffcc00;
+    background-color: #ffcc00;*/
 }
 
+.registerdevicebtn {
+    position: relative;
+    height: auto;
+    padding: 14px 20px;
+    margin: 8px 0;
+}
 
 /* Float cancel and signup buttons and add an equal width */
 .gotosigninbtn,.signupbtn,.resetpasswordbtn {float:left;width:50%}
@@ -79,7 +89,7 @@ img.avatar {
     border-radius: 50%;
 }*/
 
-.container {
+.container2 {
     padding: 18px;
 }
 
@@ -176,65 +186,30 @@ img {
 @media screen and (max-width: 767px) {
   .row.content {height: auto;}
 }
+
+table {
+      margin: 0 0 0 0;
+      width: 100%;
+}
 </style>
 </head>
 <body>
 
-<h2>Dashboard</h2>
 
-<button onclick="document.getElementById('id01').style.display='block'" style="width:auto;">Register a Device</button>
+    <!-- Wrapper -->
+      <div id="wrapper">
 
-<div id="id01" class="modal">
-  <form class="modal-content animate" action="/registerdevice.php" method="POST">
-    <div class="container">
-      <?php
-      $servername = "localhost";
-      $username = "cactus";
-      $password = "c@c7u$";
-      $dbname = "cactus";
+        <!-- Main -->
+          <div id="main">
 
-      // Create connection
-      $conn = new mysqli($servername, $username, $password, $dbname);
-      // Check connection
-      if ($conn->connect_error) {
-          die("Connection failed: " . $conn->connect_error);
-      }
-      $ip = $_SERVER['REMOTE_ADDR'];
-      $sql = "SELECT * FROM devices WHERE ip = '$ip'";
-      $result = $conn->query($sql);
+            <!-- One -->
+              <section id="about">
+                <div class="container">
+                  <header class="major">
+                    <h2>Dashboard</h2>
+                  </header>
 
-      if ($result->num_rows > 1) {
-        echo "<label><b>Too many new devices found on your network</b></label>";
-      }
-      elseif ($result->num_rows == 1) { ?>
-        <label><b>Register a New Device</b></label>
-        <input type="text" placeholder="Device Name" name="nickname" required>
-        <input type="hidden" name="email" value="<?php echo $_POST["email"];?>">
-        <div class="clearfix">
-          <button type="submit">Register Device</button>
-        </div>
-      <?php
-      } else {
-          echo "<label><b>No new devices found on your network</b></label>";
-      }
-      $conn->close();
-      ?>
-    </div>
-  </form>
-</div>
-
-<script>
-// Get the modals
-var modal = document.getElementById('id01');
-
-
-// When the user clicks anywhere outside of the modals, close it
-window.onclick = function(event) {
-    if (event.target == modal) {
-        modal.style.display = "none";
-    }
-}
-</script>
+<!-- <button onclick="document.getElementById('id01').style.display='block'" style="width:auto;">My Account</button> -->
 
 <?php
 // define variables and set to empty values
@@ -284,9 +259,125 @@ if ($result->num_rows > 0) {
     // output data of each row
     while($row = $result->fetch_assoc()) {
       if (password_verify($newPassword, $row["password_hash"])) {
-        echo "<br>Welcome " . $row["first_name"]. " " . $row["last_name"]. "!<br><br>" ;
+      ?>
+        <!-- echo "<br>Welcome " . $row["first_name"]. " " . $row["last_name"]. "!<br><br>" ; -->
+                    <p>
+        <div id="id01" class="modal">
+          <form class="modal-content animate" action="/registerdevice.php" method="POST">
+            <div class="container2">
+              <?php
+              echo "Welcome " . $row["first_name"]. " " . $row["last_name"]. "!<br>" ;
+
+              $ip = $_SERVER['REMOTE_ADDR'];
+              $sql = "SELECT * FROM devices WHERE ip = '$ip'";
+              $result = $conn->query($sql);
+
+              if ($result->num_rows > 1) {
+                echo "<label><b>Too many new devices found on your network</b></label>";
+              }
+              elseif ($result->num_rows == 1 || 1) { ?>
+                <br>
+                <label><b>Register a New Device</b></label>
+                <input type="text" placeholder="Device Name" name="nickname" required>
+                <input type="hidden" name="email" value="<?php echo $_POST["email"];?>">
+                <div class="clearfix">
+                  <button type="submit" class="registerdevicebtn">Register Device</button>
+                </div>
+              <?php
+              } else {
+                  echo "<label><b>No new devices found on your network</b></label>";
+              }
+              ?>
+              <form class="modal-content animate" action="/registerIFTTTkey.php" method="POST">
+                   <br>
+                   <label><b>Setup IFTTT Integration</b></label>
+                   <input type="text" placeholder="IFTTT Maker Channel Key" name="key" required>
+                   <input type="hidden" name="email" value="<?php echo $_POST["email"];?>">
+                   <div class="clearfix">
+                     <button type="submit" class="registerdevicebtn">Enable IFTTT Notifications</button>
+                   </div>
+             </form>
+             <!-- <form class="modal-content animate" action="/changepassword.php" method="POST"> -->
+                   <br>
+                   <label><b>Change Your Password</b></label>
+                   <input type="password" placeholder="Old Password" name="oldpassword" required>
+                   <input type="password" placeholder="New Password" name="newpassword" required>
+                   <input type="password" placeholder="Confirm New Password" name="confirmnewpassword" required>
+                   <input type="hidden" name="email" value="<?php echo $_POST["email"];?>">
+                   <div class="clearfix">
+                     <button type="submit" class="registerdevicebtn">Change Password</button>
+                   </div>
+             <!-- </form> -->
+            </div>
+          </form>
+
+
+
+        </div>
+      <?php
+      $sql = "SELECT * FROM devices WHERE user = '$email'";
+      $result = $conn->query($sql);
+
+      // echo $sql;
+      if ($result->num_rows > 0) {
+          // output data of each row
+          while($row = $result->fetch_assoc()) {
+            ?>
+            <div class="container-fluid">
+              <div class="col-sm-12">
+                <div class="well">
+            <?php
+            echo "<h4>". $row["nickname"]. "</h4>";
+            for ($i = 0; $i < 8; $i++) {
+               $sqlAvg = "select 1023 - avg(value) from measurements where timestamp >= DATE_SUB(UTC_TIMESTAMP, INTERVAL 1 DAY) and device = '" . $row["uuid"] . "' and channel = " . $i . ";";
+               $resultAvg = $conn->query($sqlAvg);
+               $rowAvg = $resultAvg->fetch_assoc();
+               // echo $sqlAvg;
+               // if (!$rowAvg["1023 - max(value)"]) {
+               //  echo "here";
+               //  echo $rowAvg["1023 - max(value)"] / 10.23;
+               //  echo "now";
+               // }
+               // echo "here";
+               // echo round($rowAvg["1023 - avg(value)"] / 10.23, 2);
+               if ($rowAvg["1023 - avg(value)"] < 900 && $rowAvg["1023 - avg(value)"] || 1) {
+                  $sqlMin = "select 1023 - max(value) from measurements where timestamp >= DATE_SUB(UTC_TIMESTAMP, INTERVAL 1 DAY) and device = '" . $row["uuid"] . "' and channel = " . $i . ";";
+                  $resultMin = $conn->query($sqlMin);
+                  $rowMin = $resultMin->fetch_assoc();
+                  $sqlCur = "select 1023 - value from measurements where timestamp = (select max(timestamp) from measurements where device = '" . $row["uuid"] . "' and channel = " . $i . ") and device = '" . $row["uuid"] . "' and channel = " . $i . ";";
+                  $resultCur = $conn->query($sqlCur);
+                  $rowCur = $resultCur->fetch_assoc();
+                  $sqlMax = "select 1023 - min(value) from measurements where timestamp >= DATE_SUB(UTC_TIMESTAMP, INTERVAL 1 DAY) and device = '" . $row["uuid"] . "' and channel = " . $i . ";";
+                  $resultMax = $conn->query($sqlMax);
+                  $rowMax = $resultMax->fetch_assoc();
+                  // echo $sqlMax;
+                  if ($i != 0) {
+                    echo "<br>";
+                  }
+                  echo "<h5><a href=gui.php?device=". $row["uuid"]. "&channel=". $i. ">Sensor ". ($i+1). "</a></h5>";
+                  echo "<table><tr><td style='text-align: left;'>Min: ". round($rowMin["1023 - max(value)"] / 10.23, 2). "%</td>";
+                  echo "<td style='text-align: center;'>Current: ". round($rowCur["1023 - value"] / 10.23, 2). "%</td>";
+                  echo "<td style='text-align: right;'>Max: ". round($rowMax["1023 - min(value)"] / 10.23, 2). "%</td></tr></table>";
+                  // echo "<br>";
+               }
+            }
+            ?>
+
+
+                </div>
+              </div>
+            </div>
+                  </p>
+            <?php
+            // echo "<br>";
+          }
+      } else {
+          // echo "<br>";
+          echo "No devices found";
       }
-      if (!password_verify($newPassword, $row["password_hash"])) {
+      $conn->close();
+      }
+      else {
         echo "<br>";
         echo "Incorrect Password";
       }
@@ -295,62 +386,38 @@ if ($result->num_rows > 0) {
     echo "<br>";
     echo "Email address not found";
 }
-
-$sql = "SELECT * FROM devices WHERE user = '$email'";
-$result = $conn->query($sql);
-
-if ($result->num_rows > 0) {
-    // output data of each row
-    while($row = $result->fetch_assoc()) {
-      ?>
-      <div class="container-fluid">
-        <div class="col-sm-9">
-          <div class="well">
-      <?php
-      echo "<h4>". $row["nickname"]. "</h4>";
-      for ($i=0; $i < 8; $i++) {
-         $sqlAvg = "select 1023 - avg(value) from measurements where timestamp >= DATE_SUB(UTC_TIMESTAMP, INTERVAL 1 DAY) and device = '" . $row["uuid"] . "' and channel = " . $i . ";";
-         $resultAvg = $conn->query($sqlAvg);
-         $rowAvg = $resultAvg->fetch_assoc();
-         // echo $sqlAvg;
-         // if (!$rowAvg["1023 - max(value)"]) {
-         //  echo "here";
-         //  echo $rowAvg["1023 - max(value)"] / 10.23;
-         //  echo "now";
-         // }
-         // echo "here";
-         // echo round($rowAvg["1023 - avg(value)"] / 10.23, 2);
-         if ($rowAvg["1023 - avg(value)"] < 900 && $rowAvg["1023 - avg(value)"]) {
-            $sqlMin = "select 1023 - max(value) from measurements where timestamp >= DATE_SUB(UTC_TIMESTAMP, INTERVAL 1 DAY) and device = '" . $row["uuid"] . "' and channel = " . $i . ";";
-            $resultMin = $conn->query($sqlMin);
-            $rowMin = $resultMin->fetch_assoc();
-            $sqlCur = "select 1023 - value from measurements where timestamp = (select max(timestamp) from measurements where device = '" . $row["uuid"] . "' and channel = " . $i . ") and device = '" . $row["uuid"] . "' and channel = " . $i . ";";
-            $resultCur = $conn->query($sqlCur);
-            $rowCur = $resultCur->fetch_assoc();
-            $sqlMax = "select 1023 - min(value) from measurements where timestamp >= DATE_SUB(UTC_TIMESTAMP, INTERVAL 1 DAY) and device = '" . $row["uuid"] . "' and channel = " . $i . ";";
-            $resultMax = $conn->query($sqlMax);
-            $rowMax = $resultMax->fetch_assoc();
-            // echo $sqlMax;
-            echo "<h5><a href=gui.php?device=". $row["uuid"]. "&channel=". $i. ">Sensor ". ($i+1). "</a></h5>";
-            echo "Min: ". round($rowMin["1023 - max(value)"] / 10.23, 2). "% ";
-            echo "Current: ". round($rowCur["1023 - value"] / 10.23, 2). "% ";
-            echo "Max: ". round($rowMax["1023 - min(value)"] / 10.23, 2). "%";
-            echo "<br>";
-         }
-      }
-      ?>
-          </div>
-        </div>
-      </div>
-      <?php
-      echo "<br>";
-    }
-} else {
-    echo "<br>";
-    echo "No devices found";
-}
-$conn->close();
 ?>
 
-</body>
+                </div>
+              </section>
+          </div>
+        <!-- Footer -->
+          <section id="footer">
+            <div class="container">
+              <ul class="copyright">
+                <li>Copyright &copy; 2017 mlindly. All rights reserved.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li><li>Fall 2016 - Spring 2017</li>
+              </ul>
+            </div>
+          </section>
+
+      </div>
+    <script>
+      // Get the modals
+      var modal = document.getElementById('id01');
+
+
+      // When the user clicks anywhere outside of the modals, close it
+      window.onclick = function(event) {
+          if (event.target == modal) {
+              modal.style.display = "none";
+          }
+      }
+    </script>
+    <div id="titleBar">
+    <!--   <a href="#header" class="toggle">
+      </a> -->
+      <button onclick="document.getElementById('id01').style.display='block'" style="width:auto;">My Account</button>
+      <span class="title">SmartGarden</span>
+    </div>
+  </body>
 </html>
