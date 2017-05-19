@@ -2887,7 +2887,7 @@
 		/* Basic */
 
 			body, input, select, textarea {
-				font-size: 12pt;
+				font-size: 10pt;
 			}
 
 			h1 br, h2 br, h3 br, h4 br, h5 br, h6 br {
@@ -3038,7 +3038,7 @@
 			}
 
 			body, input, select, textarea {
-				font-size: 12pt;
+				font-size: 10pt;
 			}
 
 		/* List */
