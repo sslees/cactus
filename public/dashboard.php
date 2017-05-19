@@ -273,7 +273,7 @@ if ($result->num_rows > 0) {
               $result = $conn->query($sql);
 
               if ($result->num_rows > 1) {
-                echo "<label><b>Too many new devices found on your network</b></label>";
+                echo "<label><b>Too many new devices found on your network. Try turning one off and refreshing.</b></label>";
               }
               elseif ($result->num_rows == 1 || 1) { ?>
                 <br>
