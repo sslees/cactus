@@ -6,7 +6,7 @@
 
 import struct
 
-CONFIG_FILE = 'cactus.config'
+CONFIG_FILE = '/etc/cactus/cactus.config'
 PACKET_FORMAT = struct.Struct('! 16s i L I')
 HOST = 'cactus.sslees.com'
 PORT = 49151
