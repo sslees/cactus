@@ -340,7 +340,7 @@ if ($result->num_rows > 0) {
                // }
                // echo "here";
                // echo round($rowAvg["1023 - avg(value)"] / 10.23, 2);
-               if ($rowAvg["1023 - avg(value)"] < 900 && $rowAvg["1023 - avg(value)"] || 1) {
+               if ($rowAvg["1023 - avg(value)"] < 900 && $rowAvg["1023 - avg(value)"]) {
                   $sqlMin = "select 1023 - max(value) from measurements where timestamp >= DATE_SUB(UTC_TIMESTAMP, INTERVAL 1 DAY) and device = '" . $row["uuid"] . "' and channel = " . $i . ";";
                   $resultMin = $conn->query($sqlMin);
                   $rowMin = $resultMin->fetch_assoc();
@@ -354,7 +354,7 @@ if ($result->num_rows > 0) {
                   if ($i != 0) {
                     echo "<br>";
                   }
-                  echo "<h5><a href=gui.php?device=". $row["uuid"]. "&channel=". $i. ">Sensor ". ($i+1). "</a></h5>";
+                  echo "<h5><a href=gui.php?device=". $row["uuid"]. "&channel=". $i. " style='text-decoration: underline;'>Sensor ". ($i+1). "</a></h5>";
                   echo "<table><tr><td style='text-align: left;'>Min: ". round($rowMin["1023 - max(value)"] / 10.23, 2). "%</td>";
                   echo "<td style='text-align: center;'>Current: ". round($rowCur["1023 - value"] / 10.23, 2). "%</td>";
                   echo "<td style='text-align: right;'>Max: ". round($rowMax["1023 - min(value)"] / 10.23, 2). "%</td></tr></table>";
