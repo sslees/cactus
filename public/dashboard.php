@@ -340,7 +340,7 @@ if ($result->num_rows > 0) {
                // }
                // echo "here";
                // echo round($rowAvg["1023 - avg(value)"] / 10.23, 2);
-               if ($rowAvg["1023 - avg(value)"] < 900 && $rowAvg["1023 - avg(value)"]) {
+               if ($rowAvg["1023 - avg(value)"] < 900 && $rowAvg["1023 - avg(value)"] || 1) {
                   $sqlMin = "select 1023 - max(value) from measurements where timestamp >= DATE_SUB(UTC_TIMESTAMP, INTERVAL 1 DAY) and device = '" . $row["uuid"] . "' and channel = " . $i . ";";
                   $resultMin = $conn->query($sqlMin);
                   $rowMin = $resultMin->fetch_assoc();
